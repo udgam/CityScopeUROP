@@ -51,6 +51,8 @@ PrintWriter logger;
 boolean drawEverything = true;
 PrintWriter output;
 
+// KEVIN TO DO - Determine proper structure to keep track of all timings, sort at finish and then output with logger...
+
 void setup() {
   output = createWriter("activity.txt");
   frameRate(9999);
@@ -113,6 +115,15 @@ void setup() {
   logger = createWriter("positions.csv");
   logger.println("Job#, Delivered(Y/N), Waiting Time, Delivery Time");
 }
+
+ArrayList<String> createTimeList(String delivered, String wait, String deliver) {
+  ArrayList<String> result = new ArrayList<String>();
+  result.add(delivered);
+  result.add(wait);
+  result.add(deliver)
+  return result;
+}
+
 void draw() {
   
   
@@ -125,7 +136,8 @@ void draw() {
   //println(schedule.times[currentJob]);
   if (schedule.times[currentJob] < time) {
     println("Missed");
-    logger.println(currentJob+", N, N/A, N/A");
+    ArrayList<String> timeList = createTimeList("N", "N/A", "N/A");
+    timeMap.put(currentJob, timeList);
     currentJob+=1;
     Spot a = null;
     //Spots.initiate(2);
@@ -196,7 +208,8 @@ void draw() {
       } else {
         missingCount+=1;
         println("Missed Job#:" + currentJob);
-        logger.println(currentJob+", N, N/A, N/A");
+        ArrayList<String> timeList = createTimeList("N", "N/A", "N/A");
+        timeMap.put(currentJob, timeList);
         currentJob+=1;
         //Spot a = null;
         //pickups.addSpot(a);
@@ -276,8 +289,12 @@ void draw() {
           paths.get(s/2).drawn = false;
           deliveredCount+=1;
           if (PEVs.PEVs.get(job).drawn == true) {
-            logger.println(count+", Y, "+(PEVs.PEVs.get(job).deliveryTime-PEVs.PEVs.get(job).inRouteTime)+
-              ", "+(time - PEVs.PEVs.get(job).deliveryTime));
+            // Job completed
+            String statusString = "Y";
+            String waitString = Integer.toString(PEVs.PEVs.get(job).deliveryTime-PEVs.PEVs.get(job).inRouteTime);
+            String deliverString = Integer.toString(time - PEVs.PEVs.get(job).deliveryTime);
+            ArrayList<String> timeList = createTimeList(statusString, waitString, deliverString);
+            timeMap.put(count, timeList);
           }
           //add = true;
           //println("Removed");
@@ -406,4 +423,8 @@ void draw() {
     
     exit();
   }
+}
+
+void writeAllData() {
+  // Need to find a better structure here...
 }
