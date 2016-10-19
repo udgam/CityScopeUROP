@@ -179,24 +179,10 @@ class PEV {
     if (locationTangent.y < 0) {
       rotation = -rotation;
     }
-
-    //// drawn tangent
-    //stroke(255, 255, 255);
-    //strokeWeight(0.5F);
-    //PVector v1 = locationTangent.setMag(50);
-    //PVector v2 = PVector.sub(locationPt,v1);
-    //PVector v3 = locationTangent.setMag(100);
-    //PVector v4 = PVector.add(locationPt,v3);
-    //line(v2.x, v2.y, v4.x, v4.y);
-
-    //println("locationPt: " + locationPt);
-    //println("locationNextPt: " + locationNextPt);
-    //println("subPVector: " + subPVector);
-    //println("rotation: " + rotation);
   }
 
-
   //When PEV is in Route to pickup
+  
   void getRotation2() {
     // get rotation
     locationTangent = inRoutePath.getTangentVector(int(inRoutePathCount));
