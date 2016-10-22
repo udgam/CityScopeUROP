@@ -1,222 +1,242 @@
-/*
-pickups = new Spots();
-  destinations = new Spots();
-  nodes = new Nodes();
-  nodes.addNodesToAllNodes(roads);
-  path = new Path(nodes);
+// Barcelona PEV Simulation v0010
+// for MIT Media Lab, Changing Place Group, CityScope Project
 
-  // Checking how many pairs of pickups and destinations exist
+// by Kevin Lyons <kalyons@mit.edu>
+// Oct.21st.2016
 
-  for (Spot spot : Spots.Spots) {
-    if (spot.status == 0) {
-      pickups.addSpot(spot);
-    }
-
-    if (spot.status == 1) {
-      destinations.addSpot(spot);
-    }
+public class Utils {
+  
+  String[] directionArray = new String[4];
+  
+  // Need a method to take in matrix and output Roads and Buildings
+  
+  void loadDirectionArray() {
+    directionArray[0] = "-1,0";
+    directionArray[1] = "0,1";
+    directionArray[2] = "1,0";
+    directionArray[3] = "0,-1";
   }
-  println(pickups.Spots.size());
-  //println(PEVs.findNearestPEV(pickups.Spots.get(0).locationPt));
-  println(destinations.Spots.size());
-
-
-  // Creating Paths
-
-  if (pickups.Spots.size() >= 1 && destinations.Spots.size() >= 1 ) {
-    paths = new ArrayList<ArrayList<PVector>>();
-    int numberOfPaths = 0;
-    if (pickups.Spots.size() < destinations.Spots.size()) {
-      numberOfPaths = pickups.Spots.size();
-    } else {
-      numberOfPaths = destinations.Spots.size();
-    }
-    println(numberOfPaths);
-
-
-    // Finding path for each pair of spot and destination
-
-    for (int i = 0; i< numberOfPaths; i++) {
-      int [] p = new int[nodes.allNodes.size()];
-      p = path.findPath(pickups.Spots.get(i), destinations.Spots.get(i), nodes);
-      ArrayList <PVector> finalPath = path.pathFromParentArray(p, pickups.Spots.get(i), destinations.Spots.get(i));
-      paths.add(finalPath);
-      //println(p);
-      if (!presenceOfPath && path.pathPresent) {
-        presenceOfPath = true;
+  
+  ParseOutput parseInputMatrix(int[][] matrix) {
+    loadDirectionArray();
+    int matrixHeight = matrix.length;
+    int [] sample = matrix[0];
+    int matrixWidth = sample.length;
+    ArrayList<Building> buildings = new ArrayList<Building>(); // Change to "Buildings" class...
+    int[][][] roadMatrix = new int[matrixHeight][matrixWidth][4];
+    ArrayList<ArrayList<Node>> roadLists = new ArrayList<ArrayList<Node>>();
+    for (int row = 0; row < matrixHeight; row++) {
+      for (int column = 0; column < matrixWidth; column++) {
+        int cell = matrix[row][column];
+        if (cell != -1) {
+          Building b = constructBuilding(cell, column, row);
+          buildings.add(b);
+        } else if (roadMatrix[row][column][0] == 0 && roadMatrix[row][column][1] == 0 && roadMatrix[row][column][2] == 0 && roadMatrix[row][column][3] == 0) {
+          // We have a Road cell. We must determine where this should go and construct Roads accordingly.
+          ArrayList<Integer> directions = getAdjacentRoadCells(matrix, row, column);
+          for (int i = 0; i < directions.size(); i++) {
+            int dir = directions.get(i);
+            // Expand along this direction and its negative, if it exists...create Nodes along the way?
+            ArrayList<Node> nodes = getRoadNodesAlongDirection(dir, row, column, matrix, roadMatrix);
+            int newDir = -1;
+            if (dir == 0)
+              newDir = 2;
+            else if (dir == 1)
+              newDir = 3;
+            if (newDir != -1) {
+              directions.remove(Integer.valueOf(newDir));
+              ArrayList<Node> otherNodes = getRoadNodesAlongDirection(newDir, row, column, matrix, roadMatrix);
+              nodes = removeDuplicates(combineLists(nodes, otherNodes));
+            }
+            roadLists.add(nodes);
+          }
+        }
       }
     }
+    writeRoadsToLocalFile(roadLists);
+    Roads roads = new Roads();
+    roads.addRoadsByRoadPtFile("roads.txt");
+    roads = removeIsolatedRoads(roads, matrix, matrixWidth, matrixHeight);
+    return new ParseOutput(roads, buildings);
   }
   
-  
-  
-  void move2() {
-    if (inRoutePath.pathOfNodes != null) {
-      // update the speed according to frameRate
-      speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
-      if (inRoutePathCount > inRoutePath.pathOfNodes.size()-1) {
-        inRoutePath.pathOfNodes = null;
-        inRoutePathCount = 0;
-      } else {
-
-        // calc the next step
-        if (inRoutePath.pathOfNodes.get(inRoutePathCount) == road.getPt(t+speedT)) {
-          t = t + speedT;
-        } else {
-          t = t - speedT;
-        }
-
-        // if at end of road
-        if (t > 1.0 || t < 0.0) {
-          // simple test on one road
-          //speedT = -speedT;
-
-          // looking for all next road connected
-          ArrayList<Road> nextRoads = new ArrayList<Road>();
-          Road closest = new Road();
-          //PVector roadEndPt = road.roadPts[road.ptNum-1];
-          //PVector roadStartPt = road.roadPts[0];
-          //int i = 0;
-          for (Road tmpRoad : roads.roads) {
-            PVector tmpRoadStartPt = tmpRoad.roadPts[0];
-            //PVector tmpRoadEndPt = tmpRoad.roadPts[tmpRoad.ptNum-1];
-            //println("tmpRoad ["+i+"]: ");
-            //println("PVector.dist(roadEndPt, tmpRoadStartPt) = "+PVector.dist(roadEndPt, tmpRoadStartPt));
-            //println("PVector.dist(roadStartPt, tmpRoadEndPt) = "+PVector.dist(roadStartPt, tmpRoadEndPt));
-            float min = 1000.0;
-            if (PVector.dist(inRoutePath.pathOfNodes.get(inRoutePathCount), tmpRoadStartPt) < min ) {
-              min = PVector.dist(inRoutePath.pathOfNodes.get(inRoutePathCount), tmpRoadStartPt);
-              closest = tmpRoad;
+  Roads removeIsolatedRoads(Roads roads, int[][] matrix, int w, int h) {
+    Roads res = new Roads();
+    for (Road road: roads.roads) {
+      if (road.roadPts.length > 1) {
+        PVector startPoint = road.roadPts[0];
+        int x1 = (int)startPoint.x, y1 = (int)startPoint.y;
+        ArrayList<Integer> adjacentStart = getAdjacentRoadCells(matrix, y1, x1);
+        PVector endPoint = road.roadPts[road.roadPts.length - 1];
+        int x2 = (int)endPoint.x, y2 = (int)endPoint.y;
+        ArrayList<Integer> adjacentEnd = getAdjacentRoadCells(matrix, y2, x2);
+        Boolean fullRoad = (x1 == 0 && x2 == w - 1) || (x2 == 0 && x1 == w - 1) || (y1 == 0 && y2 == h - 1) || (y2 == 0 && y1 == h - 1);
+        if (fullRoad || (adjacentStart.size() > 1 || adjacentEnd.size() > 1))
+          res.roads.add(road);
+        else {
+          // Need to check that each other node only has 2 adjacent nodes...
+          Boolean goodRoad = false;
+          for (int i = 1; i < road.roadPts.length - 1; i++) {
+            PVector point = road.roadPts[i];
+            int x = (int)point.x, y = (int)point.y;
+            ArrayList<Integer> adjacent = getAdjacentRoadCells(matrix, y, x);
+            if (adjacent.size() > 2) {
+              goodRoad = true;
+              res.roads.add(road);
+              break;
             }
           }
-          // pick one next road
-          //if (nextRoads.size() <= 0) {
-          //  println("ERROR: CAN NOT FIND NEXT ROAD!" + 
-          //    "THERE MUST BE DEADEND ROAD! CHECK ROAD RHINO FILE OR ROAD PT DATA TXT");
-          //}
-          //Road nextRoad = nextRoads.get(0);
-          // switch current road to next road
-          road = closest; 
-          t = 0.0;
-        }
-
-        inRoutePathCount += 1;
-      }
-    }
-  }
-  void move3() {
-    if (deliveringPath.pathOfNodes != null) {
-      // update the speed according to frameRate
-      speedT = maxSpeedMPS / road.roadLengthMeter / frameRate; //speedT unit: t per frame
-      if (deliveringPathCount > deliveringPath.pathOfNodes.size()-1) {
-        deliveringPath.pathOfNodes = null;
-        deliveringPathCount = 0;
-      } else {
-
-        // calc the next step
-        if (deliveringPath.pathOfNodes.get(deliveringPathCount) == road.getPt(t+speedT)) {
-          t = t + speedT;
-        } else {
-          t = t - speedT;
-        }
-
-        // if at end of road
-        if (t > 1.0 || t < 0.0) {
-          // simple test on one road
-          //speedT = -speedT;
-
-          // looking for all next road connected
-          ArrayList<Road> nextRoads = new ArrayList<Road>();
-          Road closest = new Road();
-          //PVector roadEndPt = road.roadPts[road.ptNum-1];
-          //PVector roadStartPt = road.roadPts[0];
-          //int i = 0;
-          for (Road tmpRoad : roads.roads) {
-            PVector tmpRoadStartPt = tmpRoad.roadPts[0];
-            //PVector tmpRoadEndPt = tmpRoad.roadPts[tmpRoad.ptNum-1];
-            //println("tmpRoad ["+i+"]: ");
-            //println("PVector.dist(roadEndPt, tmpRoadStartPt) = "+PVector.dist(roadEndPt, tmpRoadStartPt));
-            //println("PVector.dist(roadStartPt, tmpRoadEndPt) = "+PVector.dist(roadStartPt, tmpRoadEndPt));
-            float min = 1000.0;
-            if (PVector.dist(deliveringPath.pathOfNodes.get(deliveringPathCount), tmpRoadStartPt) < min ) {
-              min = PVector.dist(deliveringPath.pathOfNodes.get(deliveringPathCount), tmpRoadStartPt);
-              closest = tmpRoad;
-            }
+          if (! goodRoad) {
+            println("Invalid road detected.");
+            println("x1 = " + x1 + ", y1 = " + y1 + ", x2 = " + x2 + ", y2 = " + y2);
+            println("startList = " + adjacentStart);
+            println("endList = " + adjacentEnd);
           }
-          // pick one next road
-          //if (nextRoads.size() <= 0) {
-          //  println("ERROR: CAN NOT FIND NEXT ROAD!" + 
-          //    "THERE MUST BE DEADEND ROAD! CHECK ROAD RHINO FILE OR ROAD PT DATA TXT");
-          //}
-          //Road nextRoad = nextRoads.get(0);
-          // switch current road to next road
-          road = closest; 
-          t = 0.0;
         }
-
-        deliveringPathCount += 1;
       }
     }
+    return res;
   }
   
+  // Temporary solution as we must currently input roads with this specific text file format.
   
-  // Creating Paths
-
-  if (pickups.Spots.size() >= 1 && destinations.Spots.size() >= 1 ) {
-    paths = new ArrayList<ArrayList<PVector>>();
-    int numberOfPaths = 0;
-    if (pickups.Spots.size() < destinations.Spots.size()) {
-      numberOfPaths = pickups.Spots.size();
-    } else {
-      numberOfPaths = destinations.Spots.size();
+  // Refactor - create method to directly convert between node lists and corresponding roads... [KEVIN]
+  
+  void writeRoadsToLocalFile(ArrayList<ArrayList<Node>> allRoads) {
+    PrintWriter output = createWriter("roads.txt");
+    for (ArrayList<Node> road: allRoads) {
+      output.println("start");
+      output.println("one way");
+      for (Node n : road)
+        output.println(n.point.x + ", " + n.point.y + ", " + n.point.z);
+      output.println("end");
+      output.println("start");
+      output.println("one way");
+      road = reverseList(road);
+      for (Node n : road)
+        output.println(n.point.x + ", " + n.point.y + ", " + n.point.z);
+      output.println("end");
     }
-    println(numberOfPaths);
+    output.flush();
+    output.close();
   }
   
-  
-  
-  
-  
-  
-  
-  
-  else if (inRoutePath.pathOfNodes != null) {
-      if (inRoutePathCount<inRoutePath.pathOfNodes.size()) {
-        locationPt = inRoutePath.pathOfNodes.get(inRoutePathCount);
-        speedIRP += 1.0/60;
-        inRoutePathCount = inRoutePathCount + int(speedIRP);
-      } else {
-        inRoutePathCount = 0;
-        //inRoutePath = null;
-      }
-    } else if (deliveringPath.pathOfNodes != null) {
-      if (deliveringPathCount<deliveringPath.pathOfNodes.size()) {
-        locationPt = deliveringPath.pathOfNodes.get(deliveringPathCount);
-        speedDP += 1.0/60;
-        deliveringPathCount = deliveringPathCount + int(speedDP);
-      } else {
-        deliveringPathCount = 0;
-        //deliveringPath.pathOfNodes = null;
+  ArrayList removeDuplicates(ArrayList<Node> list) {
+    for (int i = 0; i < list.size() - 1; i++) {
+      for (int j = i + 1; j < list.size(); j++) {
+        if (list.get(i).point.x == list.get(j).point.x && list.get(i).point.y == list.get(j).point.y)
+          list.remove(j);
       }
     }
-  
-  
-    // Checking how many pairs of pickups and destinations exist
-
-  for (Spot spot : Spots.Spots) {
-    if (spot.status == 0) {
-      pickups.addSpot(spot);
-    }
-
-    if (spot.status == 1) {
-      destinations.addSpot(spot);
-    }
+    return list;
   }
-  println(pickups.Spots.size());
-  //println(PEVs.findNearestPEV(pickups.Spots.get(0).locationPt));
-  println(destinations.Spots.size());
+  
+  ArrayList combineLists(ArrayList one, ArrayList two) {
+    ArrayList res = new ArrayList();
+    for (Object o : one)
+      res.add(o);
+    for (Object n : two)
+      res.add(n);
+    return res;
+  }
+  
+  ArrayList reverseList(ArrayList input) {
+    ArrayList newList = new ArrayList();
+    for (int i = input.size() - 1; i >= 0; i--)
+      newList.add(input.get(i));
+    return newList;
+  }
+  
+  Building constructBuilding(int density, int x, int y) {
+    return new Building();
+  }
+  
+  ArrayList<Integer> getAdjacentRoadCells(int[][] matrix, int row, int column) {
+    ArrayList<Integer> returnArray = new ArrayList<Integer>();
+    try {
+      if (matrix[row - 1][column] == -1)
+        returnArray.add(0);
+    } catch (Exception e) {
+    }
+    try {
+      if (matrix[row][column + 1] == -1)
+        returnArray.add(1);
+    } catch (Exception e) {
+    }
+    try {
+      if (matrix[row + 1][column] == -1)
+        returnArray.add(2);
+    } catch (Exception e) {
+    }
+    try {
+      if (matrix[row][column - 1] == -1)
+        returnArray.add(3);
+    } catch (Exception e) {
+    }
+    return returnArray;
+  }
+  
+  ArrayList<Node> getRoadNodesAlongDirection(int dir, int row, int column, int[][] inputMatrix, int[][][] roadMatrix) {
+    println(dir);
+    String moveString = directionArray[dir];
+    String[] split = moveString.split(",");
+    int rowIncrement = Integer.parseInt(split[0]);
+    int colIncrement = Integer.parseInt(split[1]);
+    int r = row, c = column;
+    int matrixHeight = inputMatrix.length; //<>//
+    int [] sample = inputMatrix[0]; //<>//
+    int matrixWidth = sample.length;
+    ArrayList<Node> list = new ArrayList<Node>();
+    Node first = constructNode(column, row);
+    list.add(first);
+    r += rowIncrement;
+    c += colIncrement;
+    while (r >= 0 && r < matrixHeight && c >= 0 && c < matrixWidth) {
+      if (inputMatrix[r][c] == -1 && roadMatrix[r][c][dir] != 1) { //<>//
+        roadMatrix[r][c][dir] = 1;
+        Node thisNode = constructNode(c, r);
+        list.add(thisNode);
+        r += rowIncrement;
+        c += colIncrement;
+      } else
+        break;
+    }
+    if (dir == 1 || dir == 7)
+      return reverseList(list);
+    else
+      return list;
+  }
+  
+  Node constructNode(int x, int y) {
+    return new Node(new PVector(x, y, 0));
+  }
+  
+  int[][] fillMatrix(String fileName) {
+    String[] rows = loadStrings(fileName);
+    // Check length of integers. Assume good validation.
+    int matrixHeight = rows.length;
+    String[] firstRow = rows[0].split(",");
+    int matrixWidth = firstRow.length;
+    int[][] returnMatrix = new int[matrixHeight][matrixWidth];
+    for (int row = 0; row < matrixHeight; row++) {
+      String[] thisRow = rows[row].split(",");
+      for (int col = 0; col < matrixWidth; col++) {
+        returnMatrix[row][col] = Integer.parseInt(thisRow[col].trim());
+      }
+    }
+    return returnMatrix;
+  }
+  
+}
 
+class ParseOutput {
   
+  Roads roads;
+  ArrayList<Building> buildings;
   
+  ParseOutput(Roads roadsIn, ArrayList<Building> buildingsIn) {
+    roads = roadsIn;
+    buildings = buildingsIn;
+  }
   
-*/
+}

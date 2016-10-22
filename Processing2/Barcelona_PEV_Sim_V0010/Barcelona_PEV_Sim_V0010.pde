@@ -54,7 +54,20 @@ PrintWriter output;
 // KEVIN TO DO - Determine proper structure to keep track of all timings, sort at finish and then output with logger...
 
 void setup() {
-  output = createWriter("activity.txt");
+  
+  //Testing new parser
+  
+  Utils u = new Utils();
+  
+  int[][] matrix = u.fillMatrix("matrix2.txt");
+  
+  ParseOutput out = u.parseInputMatrix(matrix);
+  
+  println(out);
+  
+  // Issue - do NOT allow diagonal roads...
+  
+  output = createWriter("activity.txt"); //<>//
   frameRate(9999);
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
   screenScale = width / 1920.0; //fit everything with screen size
@@ -73,7 +86,7 @@ void setup() {
   
   roadPtFile = "RD_160420.txt";
   roads = new Roads();
-  roads.addRoadsByRoadPtFile(roadPtFile);
+  roads.addRoadsByRoadPtFile(roadPtFile); //<>//
   smallerSampleRoads = new Roads();
   smallerSampleRoads.roads.add(roads.roads.get(0));
   smallerSampleRoads.roads.add(roads.roads.get(1));
@@ -92,7 +105,7 @@ void setup() {
   paths = new ArrayList<Path>();
 
   pickups = new Spots();
-  destinations = new Spots(); //<>//
+  destinations = new Spots();
   nodes.addNodesToAllNodes(roads);
   path = new Path(nodes);
 
