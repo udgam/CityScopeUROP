@@ -15,8 +15,7 @@ class Building {
   Building(float d, float x, float y){
     nearestRoads = new ArrayList <Road>();
     density = d;
-    position.x = x;
-    position.y = y;
+    position = new PVector(x,y,0);
     probability = 0;
   }
   

@@ -49,6 +49,7 @@ ArrayList <PVector> test, test2;
 boolean add = true;
 PrintWriter logger;
 boolean drawEverything = true;
+boolean nothingDrawn = false;
 PrintWriter output;
 
 // KEVIN TO DO - Determine proper structure to keep track of all timings, sort at finish and then output with logger...
@@ -68,13 +69,15 @@ void setup() {
   // Issue - do NOT allow diagonal roads...
   
   output = createWriter("activity.txt"); //<>//
+  
+  
   frameRate(9999);
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
   screenScale = width / 1920.0; //fit everything with screen size
   scale(screenScale);
   println("width = "+width);
   println("screenScale = "+screenScale);
-
+  //if (drawEverything){
   pg = createGraphics(1920, 1920);
 
   setupScrollbars();
@@ -82,8 +85,9 @@ void setup() {
   smooth(8); //2,3,4, or 8
 
   img_BG = loadImage("BG_ALL_75DPI.png");
-  // add roads
-  
+    
+  //}
+// add roads
   roadPtFile = "RD_160420.txt";
   roads = new Roads();
   roads.addRoadsByRoadPtFile(roadPtFile); //<>//
@@ -103,7 +107,6 @@ void setup() {
   //add Pickup Spots
   Spots = new Spots();
   paths = new ArrayList<Path>();
-
   pickups = new Spots();
   destinations = new Spots();
   nodes.addNodesToAllNodes(roads);
@@ -123,6 +126,18 @@ void setup() {
 void draw() {
   
   time += 1;
+  
+  if (!drawEverything && !nothingDrawn){
+    for (PEV pev: PEVs.PEVs){
+      pev.drawn = false;
+      pev.inRoutePath.drawn = false;
+      pev.deliveringPath.drawn = false;
+      nothingDrawn = true;
+    }
+    
+  }
+  
+  
   
   // Getting a PEV to "pick up package"
   

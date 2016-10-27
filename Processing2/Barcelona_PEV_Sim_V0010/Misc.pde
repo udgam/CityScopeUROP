@@ -147,8 +147,8 @@ public class Utils {
     return newList;
   }
   
-  Building constructBuilding(int density, int x, int y) {
-    return new Building();
+  Building constructBuilding(float density, float x, float y) {
+    return new Building(density,x, y);
   }
   
   ArrayList<Integer> getAdjacentRoadCells(int[][] matrix, int row, int column) {
