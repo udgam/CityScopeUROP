@@ -16,6 +16,15 @@ class Schedule {
     addJobs(d);
   }
   
+  Schedule(){
+    pickupX = new float[999999999];
+    pickupY = new float[999999999];
+    dropoffX = new float[999999999];
+    dropoffY = new float[999999999];
+  }
+  
+  
+  
   void addJobs(String _data) {
     String [] job = null;
     data = _data;
