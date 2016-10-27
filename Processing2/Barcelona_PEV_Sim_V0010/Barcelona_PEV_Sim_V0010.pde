@@ -64,10 +64,16 @@ void setup() {
   
   ParseOutput out = u.parseInputMatrix(matrix);
   
-  println(out);
+  Probability prob = new Probability();
+  
+  prob.init("function.txt");
+  
+  double test = prob.evaluate(1); //<>//
+  
+  println(test/35000); //<>//
   
   // Issue - do NOT allow diagonal roads...
-  
+   //<>//
   output = createWriter("activity.txt"); //<>//
   
   
@@ -86,7 +92,7 @@ void setup() {
 
   img_BG = loadImage("BG_ALL_75DPI.png");
     
-  //}
+  //} //<>//
 // add roads
   roadPtFile = "RD_160420.txt";
   roads = new Roads();

@@ -226,7 +226,6 @@ public class Utils {
     }
     return returnMatrix;
   }
-  
 }
 
 class ParseOutput {

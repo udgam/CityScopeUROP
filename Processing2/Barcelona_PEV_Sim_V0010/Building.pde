@@ -29,7 +29,6 @@ class Building {
   
 }
 
-
 //Methods
 
 //jobProbability() = returns a float with the relative probability of a job spawning from this Building in comparison to other Buildings on the grid [KEVIN]

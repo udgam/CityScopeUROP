@@ -1,0 +1,1 @@
+// Implement linear approximation of the function
