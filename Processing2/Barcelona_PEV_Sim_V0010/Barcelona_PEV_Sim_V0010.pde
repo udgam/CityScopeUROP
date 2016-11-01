@@ -48,11 +48,9 @@ Schedule schedule;
 ArrayList <PVector> test, test2;
 boolean add = true;
 PrintWriter logger;
-boolean drawEverything = true;
+boolean drawEverything = false;
 boolean nothingDrawn = false;
 PrintWriter output;
-
-// KEVIN TO DO - Determine proper structure to keep track of all timings, sort at finish and then output with logger...
 
 void setup() {
   
@@ -68,14 +66,9 @@ void setup() {
   
   prob.init("function.txt");
   
-  double test = prob.evaluate(1); //<>//
-  
-  println(test/35000); //<>//
-  
-  // Issue - do NOT allow diagonal roads...
+  float x = prob.getValue(1437); //<>// //<>//
    //<>//
   output = createWriter("activity.txt"); //<>//
-  
   
   frameRate(9999);
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
@@ -130,6 +123,8 @@ void setup() {
 }
 
 void draw() {
+  
+  println(frameRate);
   
   time += 1;
   
@@ -311,7 +306,7 @@ void draw() {
     image(pg, 0, 0);
 
     //show frameRate;
-    //println(frameRate);
+    println(frameRate);
     textAlign(RIGHT);
     textSize(10*2/screenScale);
     fill(200);
