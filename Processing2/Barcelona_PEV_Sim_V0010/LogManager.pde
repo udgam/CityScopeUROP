@@ -1,8 +1,9 @@
 class LogManager {
 
   PrintWriter writer;
+  Boolean doPrint;
   
-  void init() {
+  void init(Boolean doIt) {
     String month = Integer.toString(month());
     String day = Integer.toString(day());
     String year = Integer.toString(year());
@@ -15,11 +16,15 @@ class LogManager {
     // Create output file based on simulation start time
     
     writer = createWriter(fileName);
+    
+    doPrint = doIt;
   }
   
   void logEvent(String input) {
     // Log the given input string to our writer
     writer.println(input);
+    if(doPrint)
+      println(input);
   }
   
   void close() {
@@ -31,10 +36,10 @@ class LogManager {
   }
   
   void logPEVLocations(ArrayList<PEV> theList, int time) {
-    logEvent(">>> Logging PEV information for timestep " + time + ".");
-    logEvent("ID\t\tStatus\t\tX\t\tY");
+    logEvent("\n>>> Logging PEV information for time = " + time + ".\n");
+    logEvent("ID\tStatus\t\tX\tY");
     for (PEV p : theList) {
-      logEvent(p.id + "\t\t" + p.action + "\t\t" + p.locationPt.x + "\t\t" + p.locationPt.y);
+      logEvent(p.id + "\t" + p.action + "\t" + p.locationPt.x + "\t" + p.locationPt.y);
     }
   }
   

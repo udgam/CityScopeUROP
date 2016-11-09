@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 20;
+int totalPEVNum = 10;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -48,9 +48,8 @@ Schedule schedule;
 ArrayList <PVector> test, test2;
 boolean add = true;
 PrintWriter logger;
-boolean drawEverything = true;
+boolean drawEverything = false;
 boolean nothingDrawn = false;
-PrintWriter output;
 ArrayList <Building> allBuildings;
 boolean jobPresent = false;
 Probability prob = new Probability();
@@ -58,7 +57,7 @@ int totalDensity = 0;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 500; // 1 day in minutes - 20 minutes?
+int totalRunTime = 100; // 1 day in minutes - 20 minutes?
 
 // TO DO - Create configurable input format...
 
@@ -82,16 +81,13 @@ void setup() {
     totalDensity += int(building.density);
   }
 
-  
   prob.init("function.txt");
   
   float x = prob.getValue(1565);
   
   // Testing logging tools.
   
-  log.init();
-  
-  output = createWriter("activity.txt");
+  log.init(false);
   
   frameRate(9999);
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
@@ -115,7 +111,7 @@ void setup() {
   //roads.addRoadsByRoadPtFile(roadPtFile); //<>//
   //smallerSampleRoads = new Roads();
   //smallerSampleRoads.roads.add(roads.roads.get(0));
-  //smallerSampleRoads.roads.add(roads.roads.get(1));
+  //smallerSampleRoads.roads.add(roads.roads.get(1)); //<>//
   //roadPtFile = "RD_160420.txt";
   //roads = new Roads();
   //roads.addRoadsByRoadPtFile(roadPtFile);
@@ -136,11 +132,9 @@ void setup() {
   Spots = new Spots(); //<>// //<>//
   paths = new ArrayList<Path>();
   pickups = new Spots();
-  destinations = new Spots();
+  destinations = new Spots(); //<>//
   nodes.addNodesToAllNodes(roads);
   path = new Path(nodes);
-  
-  println(nodes.allNodes); //<>//
   //Missing PEV Construction //<>//
   PEV miss = new PEV(roads.roads.get(0), 0.0, -1);
   miss.drawn = false;
@@ -151,7 +145,7 @@ void setup() {
   
   // logger.println("Job#, Delivered(Y/N), Waiting Time, Delivery Time");
   
-  log.logEvent("Simulation initialized.");
+  log.logEvent("Simulation initialized with " + totalPEVNum + " available PEVs.");
   log.logEvent("Using LogStatus type of " + logStatus.toString() + ".");
 }
 
@@ -168,7 +162,7 @@ void draw() {
       pev.inRoutePath.drawn = false;
       pev.deliveringPath.drawn = false;
       nothingDrawn = true;
-    }
+    } //<>//
     
   }
   float currentProb = prob.getValue(time)*100;
@@ -422,12 +416,14 @@ void draw() {
   
   //println(time);
   
-  if (currentJob == 100) { // Should be totalRunTime
+  if (time == totalRunTime) { // Should be totalRunTime
     // Make sure that all jobs have some "completed state", whether that be completed or missed.
     // Don't want any hanging jobs.
-    log.logEvent("Simulation complete after total time of " + totalRunTime + " minutes.");
-    log.logEvent("---------- Job Summary ----------");
-    log.logEvent("Missed Job Count = " + missingCount + " jobs.");
+    log.logEvent("\nSimulation complete after total time of " + totalRunTime + " minutes.");
+    log.logEvent("\n---------- Job Summary ----------");
+    log.logEvent("\nMissed Job Count = " + missingCount + " jobs.");
+    
+    println(schedule.times.size());
     
     log.close();
     exit();
