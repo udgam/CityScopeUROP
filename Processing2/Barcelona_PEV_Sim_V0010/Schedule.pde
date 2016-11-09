@@ -7,41 +7,38 @@
 class Schedule {
   String data;
   String [] allLines;
-  int [] times = null;
-  float [] pickupX;
-  float [] pickupY;
-  float [] dropoffX;
-  float [] dropoffY;
-  Schedule(String d) {
-    addJobs(d);
-  }
+  ArrayList <Integer> times = new ArrayList<Integer>();
+  ArrayList <Float> pickupX = new ArrayList <Float>();
+  ArrayList <Float> pickupY = new ArrayList <Float>();
+  ArrayList <Float> dropOffX = new ArrayList <Float>();
+  ArrayList <Float> dropOffY = new ArrayList <Float>();
+  ArrayList <Boolean> jobStarted = new ArrayList <Boolean> ();
+  //Schedule(String d) {
+  //  addJobs(d);
+  //}
   
   Schedule(){
-    pickupX = new float[999999999];
-    pickupY = new float[999999999];
-    dropoffX = new float[999999999];
-    dropoffY = new float[999999999];
   }
   
   
   
-  void addJobs(String _data) {
-    String [] job = null;
-    data = _data;
-    allLines = loadStrings(data);
-    int totalLines = allLines.length;
-    times = new int[totalLines];
-    pickupX = new float[totalLines];
-    pickupY = new float[totalLines];
-    dropoffX = new float[totalLines];
-    dropoffY = new float[totalLines];
-    for (int i = 1; i <= totalLines-1; i++){
-      job = split(allLines[i], ",");
-      times[i] = int(job[0]);
-      pickupX[i] = float(job[1]);
-      pickupY[i] = float(job[2]);
-      dropoffX[i] = float(job[3]);
-      dropoffY[i] = float(job[4]);
-    }
-  }
+  //void addJobs(String _data) {
+  //  String [] job = null;
+  //  data = _data;
+  //  allLines = loadStrings(data);
+  //  int totalLines = allLines.length;
+  //  times = new int[totalLines];
+  //  pickupX = new float[totalLines];
+  //  pickupY = new float[totalLines];
+  //  dropoffX = new float[totalLines];
+  //  dropoffY = new float[totalLines];
+  //  for (int i = 1; i <= totalLines-1; i++){
+  //    job = split(allLines[i], ",");
+  //    times[i] = int(job[0]);
+  //    pickupX[i] = float(job[1]);
+  //    pickupY[i] = float(job[2]);
+  //    dropoffX[i] = float(job[3]);
+  //    dropoffY[i] = float(job[4]);
+  //  }
+  //}
 }

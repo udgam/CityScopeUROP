@@ -48,9 +48,14 @@ Schedule schedule;
 ArrayList <PVector> test, test2;
 boolean add = true;
 PrintWriter logger;
-boolean drawEverything = false;
+boolean drawEverything = true;
 boolean nothingDrawn = false;
 PrintWriter output;
+ArrayList <Building> allBuildings;
+boolean jobPresent = false;
+Probability prob = new Probability();
+int totalDensity = 0;
+
 
 void setup() {
   
@@ -61,8 +66,15 @@ void setup() {
   int[][] matrix = u.fillMatrix("matrix2.txt");
   
   ParseOutput out = u.parseInputMatrix(matrix);
+  roads = out.roads;
+  allBuildings = out.buildings;
   
-  Probability prob = new Probability();
+  for (Building building: allBuildings){
+    building.nearestRoad = roads.findRoadWithLocation(building.position);
+    building.nearestPt = roads.findPVectorWithLocation(building.position);
+    totalDensity += int(building.density);
+  }
+
   
   prob.init("function.txt");
   
@@ -87,12 +99,12 @@ void setup() {
     
   //} //<>//
 // add roads
-  roadPtFile = "RD_160420.txt";
-  roads = new Roads();
-  roads.addRoadsByRoadPtFile(roadPtFile); //<>//
-  smallerSampleRoads = new Roads();
-  smallerSampleRoads.roads.add(roads.roads.get(0));
-  smallerSampleRoads.roads.add(roads.roads.get(1));
+  //roadPtFile = "RD_160420.txt";
+  //roads = new Roads();
+  //roads.addRoadsByRoadPtFile(roadPtFile); //<>//
+  //smallerSampleRoads = new Roads();
+  //smallerSampleRoads.roads.add(roads.roads.get(0));
+  //smallerSampleRoads.roads.add(roads.roads.get(1));
 
   // add PEVs
   PEVs = new PEVs();
@@ -101,7 +113,7 @@ void setup() {
   //add od data
   String d = "OD_160502_439trips_noRepeat_noIntersections.csv";
   String withRepeats = "OD_160503_1000trips_withRepeat_noIntersections.csv";
-  schedule = new Schedule(d);
+  schedule = new Schedule();
   
   //add Pickup Spots
   Spots = new Spots();
@@ -124,7 +136,6 @@ void setup() {
 
 void draw() {
   
-  println(frameRate);
   
   time += 1;
   
@@ -138,74 +149,109 @@ void draw() {
     
   }
   
-  
+  float currentProb = prob.getValue(time)*100;
+  float randomJobProb = random(100);
+  if (randomJobProb <= currentProb){
+    jobPresent = true;
+  }
+  else{
+    jobPresent = false;
+  }
   
   // Getting a PEV to "pick up package"
   
-  //If the job is missed
-  if (schedule.times[currentJob] < time) {
-    println("Missed");
-    
-    //KEVIN - MISSED JOB
-    
-    currentJob+=1;
-    Spot a = null;
-    //Spots.initiate(2);
-    pickups.addSpot(a);
-    destinations.addSpot(a);
-    pickupsIndex +=1;
-    destinationsIndex +=1;
-    int p = 0;
-    currentPEVs.add(0);
-  }
+
   
   //If the job is found
-  if (schedule.times[currentJob] == time) {
+  if (jobPresent) {
+    
+    // Finding random pickup Building and dropOff Building
+    int pickupBuildingRand = int(random(totalDensity));
+    int dropOffBuildingRand = int(random(totalDensity));
+    Building pickupBuilding = null;
+    Building dropOffBuilding = null;
+    
+    int currentDensity = 0;
+    for(Building building: allBuildings){
+      currentDensity += int(building.density);
+      if (pickupBuildingRand <= currentDensity && pickupBuilding == null){
+        pickupBuilding = building;
+      }
+      if (dropOffBuildingRand <= currentDensity && dropOffBuilding == null && pickupBuilding != building){
+        dropOffBuilding = building;
+      }
+    }
+    
+    
+    schedule.times.add(time);
+    schedule.pickupX.add(pickupBuilding.position.x);
+    schedule.pickupY.add(pickupBuilding.position.y);
+    schedule.pickupY.add(dropOffBuilding.position.x);
+    schedule.pickupY.add(dropOffBuilding.position.y);
+    schedule.jobStarted.add(!jobPresent);
+
+    println("CHECKING VALUES");
+    println(totalDensity);
+    println(pickupBuildingRand);
+    println(dropOffBuildingRand);
+    println(pickupBuilding.position);
+    println(pickupBuilding.density);
+    println(pickupBuilding.nearestPt);
+    println(dropOffBuilding.position);
+    
+    PVector pickupLocation = pickupBuilding.nearestPt;
+    PVector dropOffLocation = dropOffBuilding.nearestPt;
     Spots.initiate(2);
     for (int i = 0; i<=1; i++) {
       Spot s = Spots.Spots.get(Spots.Spots.size()-(2-i));
       //println(s.locationPt);
       //Add Pickup Spot
       if (i == 0) {
-        PVector p = new PVector(schedule.pickupX[currentJob], abs(schedule.pickupY[currentJob]), 0.0);
-        s.locationPt = roads.findPVectorWithLocation(p);
-        s.road = roads.findRoadWithLocation(s.locationPt);
+        
+        s.locationPt = pickupLocation;
+        s.road = pickupBuilding.nearestRoad;
         s.status = 0;
         s.t = roads.findTWithLocation(s.locationPt);
-        pickups.addSpot(s);
-        pickupsToSpots[pickupsIndex] = totalSpots;
-        totalSpots += 1;
-        pickupsIndex +=1;
+        //pickups.addSpot(s);
+        //pickupsToSpots[pickupsIndex] = totalSpots;
+        //totalSpots += 1;
+        //pickupsIndex +=1;
       }
       //Add Delivery Spot
       if (i == 1) {
-        PVector p = new PVector(schedule.dropoffX[currentJob], abs(schedule.dropoffY[currentJob]), 0.0);
-        s.locationPt = roads.findPVectorWithLocation(p);
-        s.road = roads.findRoadWithLocation(s.locationPt);
+        
+        s.locationPt = dropOffLocation;
+        s.road = dropOffBuilding.nearestRoad;
         s.status = 1;
         s.t = roads.findTWithLocation(s.locationPt);
-        destinations.addSpot(s);
-        destinationsToSpots[destinationsIndex] = totalSpots;
-        totalSpots += 1;
-        destinationsIndex +=1;
+        //destinations.addSpot(s);
+        //destinationsToSpots[destinationsIndex] = totalSpots;
+        //totalSpots += 1;
+        //destinationsIndex +=1;
+        
+        
       }
     }
     
-    //While a job is within the bounds of our arrays for pickup and dropoff, we add the paths necessary to the closest PEVs
-    while (pickups.Spots.size() >= currentJob && destinations.Spots.size() >= currentJob) {
+    //Start currentJob
       // Moving to starting location path
-      if (PEVs.findNearestPEV(pickups.Spots.get(currentJob-1).locationPt) >= 0) {
-        currentPEVs.add(PEVs.findNearestPEV(pickups.Spots.get(currentJob-1).locationPt));
-        PEVs.PEVs.get(currentPEVs.get(currentJob-1)).action = "inRoute";
-        PEVs.PEVs.get(currentPEVs.get(currentJob-1)).inRouteTime = time;
-        int [] p = path.findPath(PEVs.PEVs.get(currentPEVs.get(currentJob-1)).locationPt, pickups.Spots.get(currentJob-1).locationPt, nodes);
-        PEVs.PEVs.get(currentPEVs.get(currentJob-1)).inRoutePath.pathOfNodes = path.pathFromParentArray(p, PEVs.PEVs.get(currentPEVs.get(currentJob-1)).locationPt, pickups.Spots.get(currentJob-1).locationPt);
-
+    
+    
+      if (PEVs.findNearestPEV(pickupLocation) >= 0) {
+        println("Empty PEV Found");
+        currentPEVs.add(PEVs.findNearestPEV(pickupLocation));
+        PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).action = "inRoute";
+        PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).inRouteTime = time;
+        int [] p = path.findPath(PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).locationPt, pickupLocation, nodes);
+        PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).inRoutePath.pathOfNodes = path.pathFromParentArray(p, PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).locationPt, pickupLocation);
+        //print("Path from PEV to pickup");
+        //println(PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).inRoutePath.pathOfNodes);
         // Moving from start to finish path
 
-        int [] p2 = path.findPath(pickups.Spots.get(currentJob-1).locationPt, destinations.Spots.get(currentJob-1).locationPt, nodes);
-        PEVs.PEVs.get(currentPEVs.get(currentJob-1)).deliveringPath.pathOfNodes = path.pathFromParentArray(p2, pickups.Spots.get(currentJob-1).locationPt, destinations.Spots.get(currentJob-1).locationPt);
-        
+        int [] p2 = path.findPath(pickupLocation, dropOffLocation, nodes);
+        PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).deliveringPath.pathOfNodes = path.pathFromParentArray(p2, pickupLocation, dropOffLocation);
+        //println("Path from pickup to dropOff");
+        //println(PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).deliveringPath.pathOfNodes);
         Path temp = new Path(nodes);
         temp.pathOfNodes = PEVs.PEVs.get(currentPEVs.get(currentJob-1)).deliveringPath.pathOfNodes;
         temp.drawn = true;
@@ -213,26 +259,26 @@ void draw() {
         currentJob += 1;
         presenceOfPath = true;
         
-      } else {
-        
-        missingCount+=1;
-        
-        println("Missed Job#:" + currentJob);
-        
-        // KEVIN - MISSED
-        
-        currentJob+=1;
-        
-        // Using null PEV
-        
-        currentPEVs.add(PEVs.PEVs.size() - 1);
-        Path fake = new Path(nodes);
-        PVector r = new PVector(0.0, 0.0, 0.0);
-        Node s = new Node(r);
-        fake.pathOfNodes.add(s);
-        paths.add(fake);
       }
-    }
+      //else {
+        
+      //  missingCount+=1;
+        
+      //  println("Missed Job#:" + currentJob);
+        
+      //  // KEVIN - MISSED
+        
+      //  currentJob+=1;
+        
+      //  // Using null PEV
+        
+      //  currentPEVs.add(PEVs.PEVs.size() - 1);
+      //  Path fake = new Path(nodes);
+      //  PVector r = new PVector(0.0, 0.0, 0.0);
+      //  Node s = new Node(r);
+      //  fake.pathOfNodes.add(s);
+      //  paths.add(fake);
+      //}
   }
 
   //Checking PEV Status, seeing if any PEVS have recently completed jobs
@@ -348,11 +394,11 @@ void draw() {
       
   //}
   
-  println("Max Activity is " + maxActivity);
+  //println("Max Activity is " + maxActivity);
   
   //path.drawPath2(test);
   //path.drawPath2(test2);
-  //println(deliveredCount);
+  //ln(deliveredCount);
   //println(missingCount);
   
   if (currentJob >= 440) {

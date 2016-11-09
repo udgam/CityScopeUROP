@@ -80,9 +80,14 @@ class PEVs {
     int answer = -1;
     float min = 1000000.0;
     float temp = 0.0;
+    //println("Reached Function");
+    //println(PEVs.size());
     for (int i = 0; i <= PEVs.size()-1; i++) {
+      println(PEVs.get(i).drawn);
       if (PEVs.get(i).action == "wandering" && PEVs.get(i).drawn) {
+        //println("Found wandering PEV");
         temp = PVector.dist(PEVs.get(i).locationPt, location);
+        println(temp);
         if (temp < min) {
           min = temp;
           answer = i;

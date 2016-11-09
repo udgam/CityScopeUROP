@@ -9,7 +9,7 @@ class Path {
   String roadPtFile;
   ArrayList <Node> pathOfNodes;
   boolean pathPresent = false;
-  float roadConnectionTolerance = 20.0; //.75 originally
+  float roadConnectionTolerance = 2.0; //.75 originally
   int infinity = 999999999;
   boolean drawn = false;
   int destinationID = 99999999;

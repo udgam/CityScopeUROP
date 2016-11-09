@@ -5,24 +5,19 @@
 // Oct.21st.2016
 
 class Building {
-  // To be implemented...
-  ArrayList<Road> nearestRoads; // Represents nearest Road to building, from which we're going to 
+  Road nearestRoad; // Represents nearest Road to building, from which we're going to 
+  PVector nearestPt;
   float density;
   float probability;
   PVector position;
   
   
   Building(float d, float x, float y){
-    nearestRoads = new ArrayList <Road>();
     density = d;
     position = new PVector(x,y,0);
+    nearestRoad = null;
+    nearestPt = null;
     probability = 0;
-  }
-  
-// Returns a float with the relative probability of a job spawning from this Building in comparison to other Buildings on the grid
-
-  float jobProbability(){
-     return 0.0;
   }
 
   
