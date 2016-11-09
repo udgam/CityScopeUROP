@@ -56,7 +56,6 @@ boolean jobPresent = false;
 Probability prob = new Probability();
 int totalDensity = 0;
 
-
 LogManager log = new LogManager();
 
 int totalRunTime = 500; // 1 day in minutes - 20 minutes?
@@ -123,8 +122,6 @@ void setup() {
   //smallerSampleRoads = new Roads();
   //smallerSampleRoads.roads.add(roads.roads.get(0));
   //smallerSampleRoads.roads.add(roads.roads.get(1));
-  
-  
 
   // add PEVs
   PEVs = new PEVs();
@@ -182,7 +179,6 @@ void draw() {
   else{
     jobPresent = false;
   }
-  
   // Getting a PEV to "pick up package"
   
 
