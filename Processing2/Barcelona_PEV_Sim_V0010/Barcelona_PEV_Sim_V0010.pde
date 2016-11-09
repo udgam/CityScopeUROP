@@ -105,7 +105,7 @@ void setup() {
   img_BG = loadImage("BG_ALL_75DPI.png");
     
   //}
-// add roads
+  // add roads
   //roadPtFile = "RD_160420.txt";
   //roads = new Roads();
   //roads.addRoadsByRoadPtFile(roadPtFile); //<>//
@@ -124,8 +124,8 @@ void setup() {
   PEVs.initiate(totalPEVNum);
 
   //add od data
-  String d = "OD_160502_439trips_noRepeat_noIntersections.csv";
-  String withRepeats = "OD_160503_1000trips_withRepeat_noIntersections.csv";
+  //String d = "OD_160502_439trips_noRepeat_noIntersections.csv";
+  //String withRepeats = "OD_160503_1000trips_withRepeat_noIntersections.csv";
   schedule = new Schedule();
   
   //add Pickup Spots
@@ -139,11 +139,6 @@ void setup() {
   PEV miss = new PEV(roads.roads.get(0), 0.0, -1);
   miss.drawn = false;
   PEVs.addPEV(miss);
-
-  //Creating Writer
-  // logger = createWriter("positions.csv");
-  
-  // logger.println("Job#, Delivered(Y/N), Waiting Time, Delivery Time");
   
   log.logEvent("Simulation initialized with " + totalPEVNum + " available PEVs.");
   log.logEvent("Using LogStatus type of " + logStatus.toString() + ".");
@@ -422,6 +417,7 @@ void draw() {
     log.logEvent("\nSimulation complete after total time of " + totalRunTime + " minutes.");
     log.logEvent("\n---------- Job Summary ----------");
     log.logEvent("\nMissed Job Count = " + missingCount + " jobs.");
+    log.logEvent("\nDelivered Job Count = " + deliveredCount + " jobs.");
     
     println(schedule.times.size());
     
