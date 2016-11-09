@@ -97,11 +97,11 @@ void setup() {
   frameRate(9999);
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
   screenScale = width / 1920.0; //fit everything with screen size
-  scale(screenScale);
+  scale(screenScale); //<>//
   println("width = "+width);
   println("screenScale = "+screenScale);
   //if (drawEverything){
-  pg = createGraphics(1920, 1920);
+  pg = createGraphics(1920, 1920); //<>//
 
   setupScrollbars();
 
@@ -111,21 +111,20 @@ void setup() {
     
   //}
 // add roads
-<<<<<<< Updated upstream
   //roadPtFile = "RD_160420.txt";
   //roads = new Roads();
   //roads.addRoadsByRoadPtFile(roadPtFile); //<>//
   //smallerSampleRoads = new Roads();
   //smallerSampleRoads.roads.add(roads.roads.get(0));
   //smallerSampleRoads.roads.add(roads.roads.get(1));
-=======
-  roadPtFile = "RD_160420.txt";
-  roads = new Roads();
-  roads.addRoadsByRoadPtFile(roadPtFile);
-  smallerSampleRoads = new Roads();
-  smallerSampleRoads.roads.add(roads.roads.get(0));
-  smallerSampleRoads.roads.add(roads.roads.get(1));
->>>>>>> Stashed changes
+  //roadPtFile = "RD_160420.txt";
+  //roads = new Roads();
+  //roads.addRoadsByRoadPtFile(roadPtFile);
+  //smallerSampleRoads = new Roads();
+  //smallerSampleRoads.roads.add(roads.roads.get(0));
+  //smallerSampleRoads.roads.add(roads.roads.get(1));
+  
+  
 
   // add PEVs
   PEVs = new PEVs();
@@ -143,8 +142,9 @@ void setup() {
   destinations = new Spots();
   nodes.addNodesToAllNodes(roads);
   path = new Path(nodes);
-
-  //Missing PEV Construction
+  
+  println(nodes.allNodes); //<>//
+  //Missing PEV Construction //<>//
   PEV miss = new PEV(roads.roads.get(0), 0.0, -1);
   miss.drawn = false;
   PEVs.addPEV(miss);
@@ -159,11 +159,6 @@ void setup() {
 }
 
 void draw() {
-  
-<<<<<<< Updated upstream
-  
-=======
->>>>>>> Stashed changes
   time += 1;
   
   if ((logStatus == LogStatus.PEVPrint || logStatus == LogStatus.DetailedPrint)) { // && time % 10 == 0 Only execute every 10 timesteps
@@ -179,8 +174,6 @@ void draw() {
     }
     
   }
-  
-<<<<<<< Updated upstream
   float currentProb = prob.getValue(time)*100;
   float randomJobProb = random(100);
   if (randomJobProb <= currentProb){
@@ -190,8 +183,6 @@ void draw() {
     jobPresent = false;
   }
   
-=======
->>>>>>> Stashed changes
   // Getting a PEV to "pick up package"
   
 
@@ -384,7 +375,7 @@ void draw() {
     image(pg, 0, 0);
 
     //show frameRate;
-    println(frameRate);
+    //println(frameRate);
     textAlign(RIGHT);
     textSize(10*2/screenScale);
     fill(200);
@@ -433,7 +424,7 @@ void draw() {
   //ln(deliveredCount);
   //println(missingCount);
   
-  println(time);
+  //println(time);
   
   if (currentJob == 100) { // Should be totalRunTime
     // Make sure that all jobs have some "completed state", whether that be completed or missed.
