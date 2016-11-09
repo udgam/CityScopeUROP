@@ -56,7 +56,6 @@ boolean jobPresent = false;
 Probability prob = new Probability();
 int totalDensity = 0;
 
-
 LogManager log = new LogManager();
 
 int totalRunTime = 500; // 1 day in minutes - 20 minutes?
@@ -111,21 +110,18 @@ void setup() {
     
   //}
 // add roads
-<<<<<<< Updated upstream
   //roadPtFile = "RD_160420.txt";
   //roads = new Roads();
   //roads.addRoadsByRoadPtFile(roadPtFile); //<>//
   //smallerSampleRoads = new Roads();
   //smallerSampleRoads.roads.add(roads.roads.get(0));
   //smallerSampleRoads.roads.add(roads.roads.get(1));
-=======
   roadPtFile = "RD_160420.txt";
   roads = new Roads();
   roads.addRoadsByRoadPtFile(roadPtFile);
   smallerSampleRoads = new Roads();
   smallerSampleRoads.roads.add(roads.roads.get(0));
   smallerSampleRoads.roads.add(roads.roads.get(1));
->>>>>>> Stashed changes
 
   // add PEVs
   PEVs = new PEVs();
@@ -159,11 +155,6 @@ void setup() {
 }
 
 void draw() {
-  
-<<<<<<< Updated upstream
-  
-=======
->>>>>>> Stashed changes
   time += 1;
   
   if ((logStatus == LogStatus.PEVPrint || logStatus == LogStatus.DetailedPrint)) { // && time % 10 == 0 Only execute every 10 timesteps
@@ -179,8 +170,6 @@ void draw() {
     }
     
   }
-  
-<<<<<<< Updated upstream
   float currentProb = prob.getValue(time)*100;
   float randomJobProb = random(100);
   if (randomJobProb <= currentProb){
@@ -189,9 +178,6 @@ void draw() {
   else{
     jobPresent = false;
   }
-  
-=======
->>>>>>> Stashed changes
   // Getting a PEV to "pick up package"
   
 
