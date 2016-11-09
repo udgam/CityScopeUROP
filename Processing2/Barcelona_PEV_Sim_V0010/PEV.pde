@@ -13,7 +13,7 @@ float stateChangeOdd = 0.0075;
 
 class PEV {
 
-  //int id; //PEV agent id
+  int id; //PEV agent id
   int status; 
   String action = "wandering";
   //int roadID; //the road the PEV is currently on
@@ -35,8 +35,8 @@ class PEV {
   int inRouteTime = 0;
   int deliveryTime = 0;
 
-  PEV(Road _road, float _t) {
-    //id = _id;
+  PEV(Road _road, float _t, int _id) {
+    id = _id;
     //roadID = _roadID;
     //road = roads.roads.get(roadID);
     road = _road;

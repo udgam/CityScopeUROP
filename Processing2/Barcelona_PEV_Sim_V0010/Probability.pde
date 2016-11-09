@@ -20,6 +20,8 @@ class Probability {
       if (hourValue % 1 == 0) {
         float testValue = values[(int)hourValue];
         return testValue;
+      } else if (hourValue > 23) {
+        hourValue = hourValue % 24;
       }
       int lower = (int)Math.floor(hourValue - 0.5f); //<>//
       int upper = (int)Math.floor(hourValue + 0.5f);

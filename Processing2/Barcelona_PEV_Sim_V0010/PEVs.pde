@@ -39,7 +39,7 @@ class PEVs {
       Road tmpRoad = roads.roads.get(tmpRoadID);
       float t = random(0.0, 0.75);
       //PEV tmpPEV = new PEV(currentPEVID, tmpRoadID, t);
-      PEV tmpPEV = new PEV(tmpRoad, t);
+      PEV tmpPEV = new PEV(tmpRoad, t, i);
       PEVs.add(tmpPEV);
     }
   }
@@ -58,7 +58,7 @@ class PEVs {
     int tmpRoadID = int(random(0.0, totalRoadNum-1)+0.5);
     Road tmpRoad = roads.roads.get(tmpRoadID);
     float t = random(0.0, 0.75);
-    PEV tmpPEV = new PEV(tmpRoad, t);
+    PEV tmpPEV = new PEV(tmpRoad, t, -1);
     PEVs.add(tmpPEV);
   }
 
@@ -76,6 +76,7 @@ class PEVs {
       addRandomly();
     }
   }
+  
   int findNearestPEV(PVector location) {
     int answer = -1;
     float min = 1000000.0;

@@ -148,7 +148,7 @@ public class Utils {
   }
   
   Building constructBuilding(float density, float x, float y) {
-    return new Building(density,x, y);
+    return new Building(density, x, y);
   }
   
   ArrayList<Integer> getAdjacentRoadCells(int[][] matrix, int row, int column) {

@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 10;
+int totalPEVNum = 20;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -57,6 +57,14 @@ Probability prob = new Probability();
 int totalDensity = 0;
 
 
+LogManager log = new LogManager();
+
+int totalRunTime = 500; // 1 day in minutes - 20 minutes?
+
+// TO DO - Create configurable input format...
+
+LogStatus logStatus = LogStatus.DetailedPrint;
+
 void setup() {
   
   //Testing new parser
@@ -78,9 +86,13 @@ void setup() {
   
   prob.init("function.txt");
   
-  float x = prob.getValue(1437); //<>// //<>//
-   //<>//
-  output = createWriter("activity.txt"); //<>//
+  float x = prob.getValue(1565);
+  
+  // Testing logging tools.
+  
+  log.init();
+  
+  output = createWriter("activity.txt");
   
   frameRate(9999);
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
@@ -97,14 +109,23 @@ void setup() {
 
   img_BG = loadImage("BG_ALL_75DPI.png");
     
-  //} //<>//
+  //}
 // add roads
+<<<<<<< Updated upstream
   //roadPtFile = "RD_160420.txt";
   //roads = new Roads();
   //roads.addRoadsByRoadPtFile(roadPtFile); //<>//
   //smallerSampleRoads = new Roads();
   //smallerSampleRoads.roads.add(roads.roads.get(0));
   //smallerSampleRoads.roads.add(roads.roads.get(1));
+=======
+  roadPtFile = "RD_160420.txt";
+  roads = new Roads();
+  roads.addRoadsByRoadPtFile(roadPtFile);
+  smallerSampleRoads = new Roads();
+  smallerSampleRoads.roads.add(roads.roads.get(0));
+  smallerSampleRoads.roads.add(roads.roads.get(1));
+>>>>>>> Stashed changes
 
   // add PEVs
   PEVs = new PEVs();
@@ -116,7 +137,7 @@ void setup() {
   schedule = new Schedule();
   
   //add Pickup Spots
-  Spots = new Spots();
+  Spots = new Spots(); //<>// //<>//
   paths = new ArrayList<Path>();
   pickups = new Spots();
   destinations = new Spots();
@@ -124,24 +145,34 @@ void setup() {
   path = new Path(nodes);
 
   //Missing PEV Construction
-  PEV miss = new PEV(roads.roads.get(0), 0.0);
+  PEV miss = new PEV(roads.roads.get(0), 0.0, -1);
   miss.drawn = false;
   PEVs.addPEV(miss);
 
   //Creating Writer
-  logger = createWriter("positions.csv");
+  // logger = createWriter("positions.csv");
   
-  logger.println("Job#, Delivered(Y/N), Waiting Time, Delivery Time");
+  // logger.println("Job#, Delivered(Y/N), Waiting Time, Delivery Time");
+  
+  log.logEvent("Simulation initialized.");
+  log.logEvent("Using LogStatus type of " + logStatus.toString() + ".");
 }
 
 void draw() {
   
+<<<<<<< Updated upstream
   
+=======
+>>>>>>> Stashed changes
   time += 1;
   
-  if (!drawEverything && !nothingDrawn){
+  if ((logStatus == LogStatus.PEVPrint || logStatus == LogStatus.DetailedPrint)) { // && time % 10 == 0 Only execute every 10 timesteps
+    log.logPEVLocations(PEVs.PEVs, time);
+  }
+  
+  if (! drawEverything && ! nothingDrawn) {
     for (PEV pev: PEVs.PEVs){
-      pev.drawn = false;
+      pev.drawn = false; //<>// //<>//
       pev.inRoutePath.drawn = false;
       pev.deliveringPath.drawn = false;
       nothingDrawn = true;
@@ -149,6 +180,7 @@ void draw() {
     
   }
   
+<<<<<<< Updated upstream
   float currentProb = prob.getValue(time)*100;
   float randomJobProb = random(100);
   if (randomJobProb <= currentProb){
@@ -158,6 +190,8 @@ void draw() {
     jobPresent = false;
   }
   
+=======
+>>>>>>> Stashed changes
   // Getting a PEV to "pick up package"
   
 
@@ -334,8 +368,6 @@ void draw() {
     //path.drawAllPaths();
   }
 
-
-
   if (presenceOfPath && drawEverything) {
     for (Path eachPath : paths) {
       if (eachPath.drawn) {
@@ -401,19 +433,16 @@ void draw() {
   //ln(deliveredCount);
   //println(missingCount);
   
-  if (currentJob >= 440) {
-    logger.close();
-    for (Node node: nodes.allNodes){
-      output.println("Node: "+ node.id + ", Node activity: "+node.activity);
-    }
-    //logger.flush();
-    output.flush(); // Writes the remaining data to the file
-    output.close(); // Finishes the file
+  println(time);
+  
+  if (currentJob == 100) { // Should be totalRunTime
+    // Make sure that all jobs have some "completed state", whether that be completed or missed.
+    // Don't want any hanging jobs.
+    log.logEvent("Simulation complete after total time of " + totalRunTime + " minutes.");
+    log.logEvent("---------- Job Summary ----------");
+    log.logEvent("Missed Job Count = " + missingCount + " jobs.");
     
+    log.close();
     exit();
   }
-}
-
-void writeAllData() {
-  // Need to find a better structure here...
 }

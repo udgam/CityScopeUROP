@@ -11,7 +11,6 @@ class Building {
   float probability;
   PVector position;
   
-  
   Building(float d, float x, float y){
     density = d;
     position = new PVector(x,y,0);
