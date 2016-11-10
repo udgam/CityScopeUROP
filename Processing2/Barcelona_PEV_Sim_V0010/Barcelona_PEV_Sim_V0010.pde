@@ -63,7 +63,7 @@ int totalRunTime = 100; // 1 day in minutes - 20 minutes?
 
 // TO DO - Create configurable input format...
 
-LogStatus logStatus = LogStatus.DetailedPrint;
+LogStatus logStatus = LogStatus.PEVPrint;
 
 void setup() {
   
@@ -277,7 +277,11 @@ void draw() {
         presenceOfPath = true; //<>//
         
       }
-      //else {
+      else {
+        
+      // Add to waiting queue...
+      
+      
         
       //  missingCount+=1;
         
@@ -295,7 +299,7 @@ void draw() {
       //  Node s = new Node(r);
       //  fake.pathOfNodes.add(s);
       //  paths.add(fake);
-      //}
+      }
     }
   }
 
@@ -310,6 +314,9 @@ void draw() {
           Spots.Spots.get(s+1).drawn = false;
           paths.get(s/2).drawn = false;
           deliveredCount += 1;
+          // Need to link this "job" to an actual index in our schedule...
+          //String waitString = Integer.toString(PEVs.PEVs.get(job).deliveryTime-PEVs.PEVs.get(job).inRouteTime);
+          //String deliverString = Integer.toString(time - PEVs.PEVs.get(job).deliveryTime);
         }
       }
       count += 1;
@@ -403,11 +410,14 @@ void draw() {
     makeJobs = false;
     if (schedule.times.size() == deliveredCount + missingCount) {
       log.logEvent("\nSimulation complete after total time of " + totalRunTime + " minutes.");
-      log.logEvent("\n---------- Job Summary ----------");
-      log.logEvent("\nMissed Job Count = " + missingCount + " jobs.");
-      log.logEvent("\nDelivered Job Count = " + deliveredCount + " jobs.");
-      float percent = deliveredCount / schedule.times.size() * 100 * 100.0 / 100.0;
-      log.logEvent("\nJob Completion Percentage = " + deliveredCount + "/" + schedule.times.size() + " = " + percent + "%.");
+      if (logStatus == LogStatus.DetailedPrint) {
+        log.logEvent("\n---------- Job Summary ----------");
+        // TO DOs
+        log.logEvent("\nMissed Job Count = " + missingCount + " jobs.");
+        log.logEvent("\nDelivered Job Count = " + deliveredCount + " jobs.");
+        float percent = deliveredCount / schedule.times.size() * 100 * 100.0 / 100.0;
+        log.logEvent("\nJob Completion Percentage = " + deliveredCount + "/" + schedule.times.size() + " = " + percent + "%.");
+      }
       log.close();
       exit();
     }
