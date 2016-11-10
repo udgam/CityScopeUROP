@@ -9,7 +9,7 @@ class Path {
   String roadPtFile;
   ArrayList <Node> pathOfNodes;
   boolean pathPresent = false;
-  float roadConnectionTolerance = 2.0; //.75 originally
+  float roadConnectionTolerance = 1.0; //.75 originally
   int infinity = 999999999;
   boolean drawn = false;
   int destinationID = 99999999;
@@ -105,11 +105,12 @@ class Path {
     PVector destinationPt = goalPt;
     Node current = null;
     Node beginning = null;
+    Node destination = null;
     // Finding the final node id
     for (Node node : nodes.allNodes) {
       if (node.id == destinationID) {
         current = node;
-        //println()
+        destination = node;
       }
       if (node.point == startPt) {
         beginning = node;
@@ -128,8 +129,13 @@ class Path {
       }
       //println(finalPath);
       ArrayList <Node> inOrderPath = new ArrayList<Node>();
+      
       for (int i = finalPath.size()-1; i >= 0; i -= 1) {
         inOrderPath.add(finalPath.get(i));
+      }
+      inOrderPath.remove(inOrderPath.size()-1);
+      if (destination != null){
+        inOrderPath.add(destination);
       }
       pathOfNodes = inOrderPath;
       return pathOfNodes;

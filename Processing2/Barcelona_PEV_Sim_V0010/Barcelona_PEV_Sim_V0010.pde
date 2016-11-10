@@ -200,17 +200,19 @@ void draw() {
     schedule.pickupY.add(dropOffBuilding.position.y);
     schedule.jobStarted.add(!jobPresent);
 
-    println("CHECKING VALUES");
-    println(totalDensity);
-    println(pickupBuildingRand);
-    println(dropOffBuildingRand);
-    println(pickupBuilding.position);
-    println(pickupBuilding.density);
-    println(pickupBuilding.nearestPt);
-    println(dropOffBuilding.position);
+    //println("CHECKING VALUES");
+    //println(totalDensity);
+    //println(pickupBuildingRand);
+    //println(dropOffBuildingRand);
+    //println(pickupBuilding.position);
+    //println(pickupBuilding.density);
+    //println(pickupBuilding.nearestPt);
+    //println(dropOffBuilding.position);
     
     PVector pickupLocation = pickupBuilding.nearestPt;
     PVector dropOffLocation = dropOffBuilding.nearestPt;
+    println("pickup Location:" + pickupLocation);
+    println("dropoff Location:" +dropOffLocation);
     Spots.initiate(2);
     for (int i = 0; i<=1; i++) {
       Spot s = Spots.Spots.get(Spots.Spots.size()-(2-i));
@@ -222,10 +224,10 @@ void draw() {
         s.road = pickupBuilding.nearestRoad;
         s.status = 0;
         s.t = roads.findTWithLocation(s.locationPt);
-        //pickups.addSpot(s);
-        //pickupsToSpots[pickupsIndex] = totalSpots;
-        //totalSpots += 1;
-        //pickupsIndex +=1;
+        pickups.addSpot(s);
+        pickupsToSpots[pickupsIndex] = totalSpots;
+        totalSpots += 1;
+        pickupsIndex +=1;
       }
       //Add Delivery Spot
       if (i == 1) {
@@ -234,10 +236,10 @@ void draw() {
         s.road = dropOffBuilding.nearestRoad;
         s.status = 1;
         s.t = roads.findTWithLocation(s.locationPt);
-        //destinations.addSpot(s);
-        //destinationsToSpots[destinationsIndex] = totalSpots;
-        //totalSpots += 1;
-        //destinationsIndex +=1;
+        destinations.addSpot(s);
+        destinationsToSpots[destinationsIndex] = totalSpots;
+        totalSpots += 1;
+        destinationsIndex +=1;
         
         
       }
@@ -245,8 +247,7 @@ void draw() {
     
     //Start currentJob
       // Moving to starting location path
-    
-    
+      
       if (PEVs.findNearestPEV(pickupLocation) >= 0) {
         println("Empty PEV Found");
         currentPEVs.add(PEVs.findNearestPEV(pickupLocation));
@@ -259,7 +260,11 @@ void draw() {
         // Moving from start to finish path
 
         int [] p2 = path.findPath(pickupLocation, dropOffLocation, nodes);
-        PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).deliveringPath.pathOfNodes = path.pathFromParentArray(p2, pickupLocation, dropOffLocation);
+        ArrayList <Node> t = path.pathFromParentArray(p2, pickupLocation, dropOffLocation);
+        PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).deliveringPath.pathOfNodes = t;
+        //for(Node node: t){
+        //  print(node.point);
+        //}
         //println("Path from pickup to dropOff");
         //println(PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).deliveringPath.pathOfNodes);
         Path temp = new Path(nodes);

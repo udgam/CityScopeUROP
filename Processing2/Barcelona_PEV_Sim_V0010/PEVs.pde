@@ -85,7 +85,7 @@ class PEVs {
     //println(PEVs.size());
     for (int i = 0; i <= PEVs.size()-1; i++) {
       //println(PEVs.get(i).drawn);
-      if (PEVs.get(i).action == "wandering" && PEVs.get(i).drawn) {
+      if (PEVs.get(i).action == "wandering") {
         temp = PVector.dist(PEVs.get(i).locationPt, location);
         //println(temp);
         if (temp < min) {
