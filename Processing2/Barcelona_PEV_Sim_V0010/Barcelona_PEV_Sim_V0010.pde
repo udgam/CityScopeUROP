@@ -55,6 +55,8 @@ boolean jobPresent = false;
 Probability prob = new Probability();
 int totalDensity = 0;
 
+Boolean makeJobs = true;
+
 LogManager log = new LogManager();
 
 int totalRunTime = 100; // 1 day in minutes - 20 minutes?
@@ -160,93 +162,93 @@ void draw() {
     } //<>//
     
   }
-  float currentProb = prob.getValue(time)*100;
-  float randomJobProb = random(100);
-  if (randomJobProb <= currentProb){
-    jobPresent = true;
-  }
-  else{
-    jobPresent = false;
-  }
-  // Getting a PEV to "pick up package"
   
-
+  if (makeJobs) {
   
-  //If the job is found
-  if (jobPresent) {
-    
-    // Finding random pickup Building and dropOff Building
-    int pickupBuildingRand = int(random(totalDensity));
-    int dropOffBuildingRand = int(random(totalDensity));
-    Building pickupBuilding = null;
-    Building dropOffBuilding = null;
-    
-    int currentDensity = 0;
-    for(Building building: allBuildings){
-      currentDensity += int(building.density);
-      if (pickupBuildingRand <= currentDensity && pickupBuilding == null){
-        pickupBuilding = building;
-      }
-      if (dropOffBuildingRand <= currentDensity && dropOffBuilding == null && pickupBuilding != building){
-        dropOffBuilding = building;
-      }
+    float currentProb = prob.getValue(time)*100;
+    float randomJobProb = random(100);
+    if (randomJobProb <= currentProb){
+      jobPresent = true;
     }
-    
-    
-    schedule.times.add(time);
-    schedule.pickupX.add(pickupBuilding.position.x);
-    schedule.pickupY.add(pickupBuilding.position.y);
-    schedule.pickupY.add(dropOffBuilding.position.x);
-    schedule.pickupY.add(dropOffBuilding.position.y);
-    schedule.jobStarted.add(!jobPresent);
-
-    //println("CHECKING VALUES");
-    //println(totalDensity);
-    //println(pickupBuildingRand);
-    //println(dropOffBuildingRand);
-    //println(pickupBuilding.position);
-    //println(pickupBuilding.density);
-    //println(pickupBuilding.nearestPt);
-    //println(dropOffBuilding.position);
-    
-    PVector pickupLocation = pickupBuilding.nearestPt;
-    PVector dropOffLocation = dropOffBuilding.nearestPt;
-    println("pickup Location:" + pickupLocation);
-    println("dropoff Location:" +dropOffLocation);
-    Spots.initiate(2);
-    for (int i = 0; i<=1; i++) {
-      Spot s = Spots.Spots.get(Spots.Spots.size()-(2-i));
-      //println(s.locationPt);
-      //Add Pickup Spot
-      if (i == 0) {
-        
-        s.locationPt = pickupLocation;
-        s.road = pickupBuilding.nearestRoad;
-        s.status = 0;
-        s.t = roads.findTWithLocation(s.locationPt);
-        pickups.addSpot(s);
-        pickupsToSpots[pickupsIndex] = totalSpots;
-        totalSpots += 1;
-        pickupsIndex +=1;
-      }
-      //Add Delivery Spot
-      if (i == 1) {
-        
-        s.locationPt = dropOffLocation;
-        s.road = dropOffBuilding.nearestRoad;
-        s.status = 1;
-        s.t = roads.findTWithLocation(s.locationPt);
-        destinations.addSpot(s);
-        destinationsToSpots[destinationsIndex] = totalSpots;
-        totalSpots += 1;
-        destinationsIndex +=1;
-        
-        
-      }
+    else{
+      jobPresent = false;
     }
+    // Getting a PEV to "pick up package"
     
-    //Start currentJob
-      // Moving to starting location path
+  
+    
+    //If the job is found
+    if (jobPresent) {
+      
+      // Finding random pickup Building and dropOff Building
+      int pickupBuildingRand = int(random(totalDensity));
+      int dropOffBuildingRand = int(random(totalDensity));
+      Building pickupBuilding = null;
+      Building dropOffBuilding = null;
+      
+      int currentDensity = 0;
+      for(Building building: allBuildings){
+        currentDensity += int(building.density);
+        if (pickupBuildingRand <= currentDensity && pickupBuilding == null){
+          pickupBuilding = building;
+        }
+        if (dropOffBuildingRand <= currentDensity && dropOffBuilding == null && pickupBuilding != building){
+          dropOffBuilding = building;
+        }
+      }
+      
+      
+      schedule.times.add(time);
+      schedule.pickupX.add(pickupBuilding.position.x);
+      schedule.pickupY.add(pickupBuilding.position.y);
+      schedule.pickupY.add(dropOffBuilding.position.x);
+      schedule.pickupY.add(dropOffBuilding.position.y);
+      schedule.jobStarted.add(!jobPresent);
+  
+      //println("CHECKING VALUES");
+      //println(totalDensity);
+      //println(pickupBuildingRand);
+      //println(dropOffBuildingRand);
+      //println(pickupBuilding.position);
+      //println(pickupBuilding.density);
+      //println(pickupBuilding.nearestPt);
+      //println(dropOffBuilding.position);
+      
+      PVector pickupLocation = pickupBuilding.nearestPt;
+      PVector dropOffLocation = dropOffBuilding.nearestPt;
+      println("pickup Location:" + pickupLocation);
+      println("dropoff Location:" +dropOffLocation);
+      Spots.initiate(2);
+      for (int i = 0; i<=1; i++) {
+        Spot s = Spots.Spots.get(Spots.Spots.size()-(2-i));
+        //println(s.locationPt);
+        //Add Pickup Spot
+        if (i == 0) {
+          
+          s.locationPt = pickupLocation;
+          s.road = pickupBuilding.nearestRoad;
+          s.status = 0;
+          s.t = roads.findTWithLocation(s.locationPt);
+          pickups.addSpot(s);
+          pickupsToSpots[pickupsIndex] = totalSpots;
+          totalSpots += 1;
+          pickupsIndex +=1;
+        }
+        //Add Delivery Spot
+        if (i == 1) {
+          
+          s.locationPt = dropOffLocation;
+          s.road = dropOffBuilding.nearestRoad;
+          s.status = 1;
+          s.t = roads.findTWithLocation(s.locationPt);
+          destinations.addSpot(s);
+          destinationsToSpots[destinationsIndex] = totalSpots;
+          totalSpots += 1;
+          destinationsIndex +=1;
+          
+          
+        }
+      }
       
       if (PEVs.findNearestPEV(pickupLocation) >= 0) {
         println("Empty PEV Found");
@@ -272,7 +274,7 @@ void draw() {
         temp.drawn = true;
         paths.add(temp);
         currentJob += 1;
-        presenceOfPath = true;
+        presenceOfPath = true; //<>//
         
       }
       //else {
@@ -294,6 +296,7 @@ void draw() {
       //  fake.pathOfNodes.add(s);
       //  paths.add(fake);
       //}
+    }
   }
 
   //Checking PEV Status, seeing if any PEVS have recently completed jobs
@@ -306,18 +309,7 @@ void draw() {
           Spots.Spots.get(s).drawn = false;
           Spots.Spots.get(s+1).drawn = false;
           paths.get(s/2).drawn = false;
-          deliveredCount+=1;
-          if (PEVs.PEVs.get(job).drawn == true) {
-            // Job completed
-            
-            // KEVIN - JOB COMPLETED
-            
-            String statusString = "Y";
-            String waitString = Integer.toString(PEVs.PEVs.get(job).deliveryTime-PEVs.PEVs.get(job).inRouteTime);
-            String deliverString = Integer.toString(time - PEVs.PEVs.get(job).deliveryTime);
-            
-            // LOG THIS OUT
-          }
+          deliveredCount += 1;
         }
       }
       count += 1;
@@ -407,26 +399,17 @@ void draw() {
       
   //}
   
-  //println("Max Activity is " + maxActivity);
-  
-  //path.drawPath2(test);
-  //path.drawPath2(test2);
-  //ln(deliveredCount);
-  //println(missingCount);
-  
-  //println(time);
-  
-  if (time == totalRunTime) { // Should be totalRunTime
-    // Make sure that all jobs have some "completed state", whether that be completed or missed.
-    // Don't want any hanging jobs.
-    log.logEvent("\nSimulation complete after total time of " + totalRunTime + " minutes.");
-    log.logEvent("\n---------- Job Summary ----------");
-    log.logEvent("\nMissed Job Count = " + missingCount + " jobs.");
-    log.logEvent("\nDelivered Job Count = " + deliveredCount + " jobs.");
-    
-    println(schedule.times.size());
-    
-    log.close();
-    exit();
+  if (time >= totalRunTime) {
+    makeJobs = false;
+    if (schedule.times.size() == deliveredCount + missingCount) {
+      log.logEvent("\nSimulation complete after total time of " + totalRunTime + " minutes.");
+      log.logEvent("\n---------- Job Summary ----------");
+      log.logEvent("\nMissed Job Count = " + missingCount + " jobs.");
+      log.logEvent("\nDelivered Job Count = " + deliveredCount + " jobs.");
+      float percent = deliveredCount / schedule.times.size() * 100 * 100.0 / 100.0;
+      log.logEvent("\nJob Completion Percentage = " + deliveredCount + "/" + schedule.times.size() + " = " + percent + "%.");
+      log.close();
+      exit();
+    }
   }
 }
