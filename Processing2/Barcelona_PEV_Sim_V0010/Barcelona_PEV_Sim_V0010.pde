@@ -59,7 +59,7 @@ Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 2000; // 1 day in minutes - 20 minutes?
+int totalRunTime = 100; // 1 day in minutes - 20 minutes?
 
 // TO DO - Create configurable input format...
 
@@ -67,29 +67,26 @@ LogStatus logStatus = LogStatus.NoPrint;
 
 void setup() {
   
-  //Testing new parser
+  log.init(false);
+
+  prob.init("function.txt");
   
-  Utils u = new Utils();
+  CityGenerator c = new CityGenerator();
   
-  int[][] matrix = u.fillMatrix("matrix2.txt");
+  CityOutput city = c.run();
   
-  ParseOutput out = u.parseInputMatrix(matrix);
-  roads = out.roads;
-  allBuildings = out.buildings;
+  //int[][] matrix = u.fillMatrix("matrix2.txt");
+  
+  //CityOutput out = u.parseInputMatrix(matrix);
+  
+  roads = city.roads; //<>//
+  allBuildings = city.buildings;
   
   for (Building building: allBuildings){
     building.nearestRoad = roads.findRoadWithLocation(building.position);
     building.nearestPt = roads.findPVectorWithLocation(building.position);
     totalDensity += int(building.density);
   }
-
-  prob.init("function.txt");
-  
-  float x = prob.getValue(1565);
-  
-  // Testing logging tools.
-  
-  log.init(false);
   
   frameRate(9999);
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5

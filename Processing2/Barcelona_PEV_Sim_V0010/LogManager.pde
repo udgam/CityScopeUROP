@@ -43,6 +43,22 @@ class LogManager {
     }
   }
   
+  void logMatrix(int[][] matrix, int size) {
+    ArrayList<String> l = new ArrayList<String>();
+    for (int i = 0; i < size; i++) {
+      String current = "";
+      for (int j = 0; j < size; j++) {
+        current += matrix[i][j] + "\t";
+      }
+      l.add(current);
+    }
+    logEvent("Current city configuration (" + size + " x " + size + ").");
+    for (String s : l) {
+      logEvent(s);
+    }
+    logEvent("\n");
+  }
+  
 }
 
 enum LogStatus {

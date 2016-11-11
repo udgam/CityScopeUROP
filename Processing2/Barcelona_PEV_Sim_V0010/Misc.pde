@@ -7,6 +7,7 @@
 public class Utils {
   
   String[] directionArray = new String[4];
+  int maxDensity = 25;
   
   // Need a method to take in matrix and output Roads and Buildings
   
@@ -17,8 +18,9 @@ public class Utils {
     directionArray[3] = "0,-1";
   }
   
-  ParseOutput parseInputMatrix(int[][] matrix) {
+  CityOutput parseInputMatrix(int[][] matrix) {
     loadDirectionArray();
+    int[][] og = matrix;
     int matrixHeight = matrix.length;
     int [] sample = matrix[0];
     int matrixWidth = sample.length;
@@ -57,7 +59,79 @@ public class Utils {
     Roads roads = new Roads();
     roads.addRoadsByRoadPtFile("roads.txt");
     roads = removeIsolatedRoads(roads, matrix, matrixWidth, matrixHeight);
-    return new ParseOutput(roads, buildings);
+    roads = removeDeadEnds(roads, matrix, matrixWidth, matrixHeight);
+    return formMatrix(roads, buildings, matrixWidth, matrixHeight);
+  }
+  
+  CityOutput formMatrix(Roads roads, ArrayList<Building> buildings, int w, int h) {
+    int[][] matrix = new int[h][w];
+    CityOutput city;
+    for (Road r : roads.roads) {
+      for (PVector p : r.roadPts) {
+        matrix[(int)p.y][(int)p.x] = -1;
+      }
+    }
+    for (Building b : buildings) {
+      matrix[(int)b.position.y][(int)b.position.x] = (int)b.density;
+      if (getAdjacentRoadCells(matrix, (int)b.position.y, (int)b.position.x).size() == 0)
+        return null;
+    }
+    for (int i = 0; i < h; i++) {
+      for (int j = 0; j < w; j++) {
+        if (matrix[i][j] == 0) {
+          // Need to add a building here.
+          int randomDensity = (int)random(maxDensity);
+          Building b = constructBuilding(randomDensity, j, i);
+          buildings.add(b);
+          matrix[i][j] = randomDensity;
+        }
+      }
+    }
+    city = new CityOutput(roads, buildings, true, matrix);
+    return city;
+  }
+  
+  Roads removeDeadEnds(Roads roads, int[][] matrix, int w, int h) {
+    // Assume that we have already run removeIsolatedRoads...
+    // Seeking road where one endpoint shares no others
+    Roads res = new Roads();
+    for (Road road: roads.roads) {
+      PVector startPoint = road.roadPts[0];
+      int x1 = (int)startPoint.x, y1 = (int)startPoint.y;
+      ArrayList<Integer> adjacentStart = getAdjacentRoadCells(matrix, y1, x1);
+      PVector endPoint = road.roadPts[road.roadPts.length - 1];
+      int x2 = (int)endPoint.x, y2 = (int)endPoint.y;
+      ArrayList<Integer> adjacentEnd = getAdjacentRoadCells(matrix, y2, x2);
+      Boolean goodRoad = false;
+      for (int i = 1; i < road.roadPts.length - 1; i++) {
+        PVector point = road.roadPts[i];
+        int x = (int)point.x, y = (int)point.y;
+        ArrayList<Integer> adjacent = getAdjacentRoadCells(matrix, y, x);
+        if (adjacent.size() > 2 && x != x1 && x != x2 && y != y1 && y != y2) {
+          goodRoad = true;
+          res.roads.add(road);
+          break;
+        }
+      }
+      if (goodRoad == false) {
+        if ((adjacentStart.size() == 2 && adjacentEnd.size() == 1) || (adjacentStart.size() == 1 && adjacentEnd.size() == 2))
+          goodRoad = false;
+        else
+          goodRoad = true;
+      }
+      if (! goodRoad) {
+        println("Here!!!");
+        println(road.roadPts);
+        // Connect locally, by row or column
+        for (PVector p : road.roadPts) {
+          Road newRoad = roads.findRoadWithLocation(startPoint);
+          //println(newRoad.roadPts);
+        }
+      } else {
+        res.roads.add(road);
+      }
+    }
+    return res;
   }
   
   Roads removeIsolatedRoads(Roads roads, int[][] matrix, int w, int h) {
@@ -87,10 +161,10 @@ public class Utils {
             }
           }
           if (! goodRoad) {
-            println("Invalid road detected.");
+            /*println("Invalid road detected.");
             println("x1 = " + x1 + ", y1 = " + y1 + ", x2 = " + x2 + ", y2 = " + y2);
             println("startList = " + adjacentStart);
-            println("endList = " + adjacentEnd);
+            println("endList = " + adjacentEnd);*/
           }
         }
       }
@@ -228,14 +302,18 @@ public class Utils {
   }
 }
 
-class ParseOutput {
+class CityOutput {
   
   Roads roads;
   ArrayList<Building> buildings;
+  Boolean isValid;
+  int[][] matrix;
   
-  ParseOutput(Roads roadsIn, ArrayList<Building> buildingsIn) {
+  CityOutput(Roads roadsIn, ArrayList<Building> buildingsIn, Boolean validIn, int[][] matrixIn) {
     roads = roadsIn;
     buildings = buildingsIn;
+    isValid = validIn;
+    matrix = matrixIn;
   }
   
 }

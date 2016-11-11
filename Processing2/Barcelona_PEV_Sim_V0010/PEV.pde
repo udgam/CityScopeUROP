@@ -140,6 +140,7 @@ class PEV {
         for (Road tmpRoad : roads.roads) {
           PVector tmpRoadStartPt = tmpRoad.roadPts[0];
           PVector tmpRoadEndPt = tmpRoad.roadPts[tmpRoad.ptNum-1];
+          println(tmpRoad.roadPts);
           //println("tmpRoad ["+i+"]: ");
           //println("PVector.dist(roadEndPt, tmpRoadStartPt) = "+PVector.dist(roadEndPt, tmpRoadStartPt));
           //println("PVector.dist(roadStartPt, tmpRoadEndPt) = "+PVector.dist(roadStartPt, tmpRoadEndPt));
