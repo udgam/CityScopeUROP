@@ -59,11 +59,11 @@ Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 100; // 1 day in minutes - 20 minutes?
+int totalRunTime = 2000; // 1 day in minutes - 20 minutes?
 
 // TO DO - Create configurable input format...
 
-LogStatus logStatus = LogStatus.PEVPrint;
+LogStatus logStatus = LogStatus.NoPrint;
 
 void setup() {
   
@@ -283,7 +283,7 @@ void draw() {
       
       
         
-      //  missingCount+=1;
+      missingCount+=1;
         
       //  println("Missed Job#:" + currentJob);
         
@@ -410,14 +410,12 @@ void draw() {
     makeJobs = false;
     if (schedule.times.size() == deliveredCount + missingCount) {
       log.logEvent("\nSimulation complete after total time of " + totalRunTime + " minutes.");
-      if (logStatus == LogStatus.DetailedPrint) {
-        log.logEvent("\n---------- Job Summary ----------");
-        // TO DOs
-        log.logEvent("\nMissed Job Count = " + missingCount + " jobs.");
-        log.logEvent("\nDelivered Job Count = " + deliveredCount + " jobs.");
-        float percent = deliveredCount / schedule.times.size() * 100 * 100.0 / 100.0;
-        log.logEvent("\nJob Completion Percentage = " + deliveredCount + "/" + schedule.times.size() + " = " + percent + "%.");
-      }
+      log.logEvent("\n---------- Job Summary ----------");
+      // TO DOs
+      log.logEvent("\nMissed Job Count = " + missingCount + " jobs.");
+      log.logEvent("\nDelivered Job Count = " + deliveredCount + " jobs.");
+      float percent = ((float)deliveredCount / (float)schedule.times.size()) * 100.0;
+      log.logEvent("\nJob Completion Percentage = " + deliveredCount + "/" + schedule.times.size() + " = " + percent + "%.");
       log.close();
       exit();
     }
