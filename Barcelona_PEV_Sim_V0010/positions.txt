@@ -1,0 +1,54 @@
+Job 0 Delivered, Waiting Time: 0, Delivery Time:43
+Job 2 Delivered, Waiting Time: 9, Delivery Time:24
+Job 1 Delivered, Waiting Time: 5, Delivery Time:49
+Job 3 Delivered, Waiting Time: 23, Delivery Time:36
+Job 4 Delivered, Waiting Time: 7, Delivery Time:40
+Job 7 Delivered, Waiting Time: 2, Delivery Time:14
+Job 17 Missed, Waiting Time: 0, Delivery Time: 0
+Job 16 Delivered, Waiting Time: 0, Delivery Time:148
+Job 18 Missed, Waiting Time: 0, Delivery Time: 0
+Job 17 Delivered, Waiting Time: 0, Delivery Time:149
+Job 8 Delivered, Waiting Time: 13, Delivery Time:30
+Job 5 Delivered, Waiting Time: 19, Delivery Time:61
+Job 9 Delivered, Waiting Time: 3, Delivery Time:43
+Job 11 Delivered, Waiting Time: 33, Delivery Time:7
+Job 24 Missed, Waiting Time: 0, Delivery Time: 0
+Job 23 Delivered, Waiting Time: 0, Delivery Time:175
+Job 25 Missed, Waiting Time: 0, Delivery Time: 0
+Job 24 Delivered, Waiting Time: 0, Delivery Time:177
+Job 13 Delivered, Waiting Time: 25, Delivery Time:20
+Job 14 Delivered, Waiting Time: 25, Delivery Time:20
+Job 12 Delivered, Waiting Time: 9, Delivery Time:14
+Job 19 Delivered, Waiting Time: 9, Delivery Time:14
+Job 30 Missed, Waiting Time: 0, Delivery Time: 0
+Job 29 Delivered, Waiting Time: 0, Delivery Time:200
+Job 32 Missed, Waiting Time: 0, Delivery Time: 0
+Job 31 Delivered, Waiting Time: 0, Delivery Time:203
+Job 33 Missed, Waiting Time: 0, Delivery Time: 0
+Job 32 Delivered, Waiting Time: 0, Delivery Time:210
+Job 22 Delivered, Waiting Time: 18, Delivery Time:19
+Job 35 Missed, Waiting Time: 0, Delivery Time: 0
+Job 34 Delivered, Waiting Time: 0, Delivery Time:213
+Job 36 Missed, Waiting Time: 0, Delivery Time: 0
+Job 35 Delivered, Waiting Time: 0, Delivery Time:216
+Job 37 Missed, Waiting Time: 0, Delivery Time: 0
+Job 36 Delivered, Waiting Time: 0, Delivery Time:218
+Job 20 Delivered, Waiting Time: 22, Delivery Time:34
+Job 6 Delivered, Waiting Time: 57, Delivery Time:22
+Job 15 Delivered, Waiting Time: 57, Delivery Time:22
+Job 27 Delivered, Waiting Time: 7, Delivery Time:31
+Job 41 Missed, Waiting Time: 0, Delivery Time: 0
+Job 40 Delivered, Waiting Time: 0, Delivery Time:231
+Job 42 Missed, Waiting Time: 0, Delivery Time: 0
+Job 41 Delivered, Waiting Time: 0, Delivery Time:232
+Job 18 Delivered, Waiting Time: 43, Delivery Time:36
+Job 44 Missed, Waiting Time: 0, Delivery Time: 0
+Job 43 Delivered, Waiting Time: 0, Delivery Time:240
+Job 28 Delivered, Waiting Time: 7, Delivery Time:45
+Job 10 Delivered, Waiting Time: 27, Delivery Time:15
+Job 25 Delivered, Waiting Time: 27, Delivery Time:15
+Job 30 Delivered, Waiting Time: 27, Delivery Time:15
+Job 48 Missed, Waiting Time: 0, Delivery Time: 0
+Job 47 Delivered, Waiting Time: 0, Delivery Time:249
+Job 49 Missed, Waiting Time: 0, Delivery Time: 0
+Job 48 Delivered, Waiting Time: 0, Delivery Time:250
