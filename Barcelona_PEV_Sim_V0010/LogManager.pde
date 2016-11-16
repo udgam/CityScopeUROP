@@ -11,7 +11,7 @@ class LogManager {
     String minute = Integer.toString(minute());
     String second = Integer.toString(second());
     
-    String fileName = "Sim_" + month + "-" + day + "-" + year + "_" + hour + ":" + minute + ":" + second;
+    String fileName = "SimLog_" + month + "-" + day + "-" + year + "_" + hour + ":" + minute + ":" + second;
     
     // Create output file based on simulation start time
     
