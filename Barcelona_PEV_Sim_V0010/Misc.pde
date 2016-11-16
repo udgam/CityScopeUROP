@@ -59,7 +59,6 @@ public class Utils {
     Roads roads = new Roads();
     roads.addRoadsByRoadPtFile("roads.txt");
     roads = removeIsolatedRoads(roads, matrix, matrixWidth, matrixHeight);
-    roads = removeDeadEnds(roads, matrix, matrixWidth, matrixHeight);
     return formMatrix(roads, buildings, matrixWidth, matrixHeight);
   }
   
@@ -70,11 +69,6 @@ public class Utils {
       for (PVector p : r.roadPts) {
         matrix[(int)p.y][(int)p.x] = -1;
       }
-    }
-    for (Building b : buildings) {
-      matrix[(int)b.position.y][(int)b.position.x] = (int)b.density;
-      if (getAdjacentRoadCells(matrix, (int)b.position.y, (int)b.position.x).size() == 0)
-        return null;
     }
     for (int i = 0; i < h; i++) {
       for (int j = 0; j < w; j++) {
@@ -120,8 +114,6 @@ public class Utils {
           goodRoad = true;
       }
       if (! goodRoad) {
-        println("Here!!!");
-        println(road.roadPts);
         // Connect locally, by row or column
         for (PVector p : road.roadPts) {
           Road newRoad = roads.findRoadWithLocation(startPoint);
@@ -251,14 +243,13 @@ public class Utils {
   }
   
   ArrayList<Node> getRoadNodesAlongDirection(int dir, int row, int column, int[][] inputMatrix, int[][][] roadMatrix) {
-    println(dir);
     String moveString = directionArray[dir];
     String[] split = moveString.split(",");
     int rowIncrement = Integer.parseInt(split[0]);
     int colIncrement = Integer.parseInt(split[1]);
     int r = row, c = column;
-    int matrixHeight = inputMatrix.length; //<>//
-    int [] sample = inputMatrix[0]; //<>//
+    int matrixHeight = inputMatrix.length; //<>// //<>// //<>// //<>// //<>// //<>//
+    int [] sample = inputMatrix[0]; //<>// //<>// //<>// //<>// //<>// //<>//
     int matrixWidth = sample.length;
     ArrayList<Node> list = new ArrayList<Node>();
     Node first = constructNode(column, row);
@@ -266,7 +257,7 @@ public class Utils {
     r += rowIncrement;
     c += colIncrement;
     while (r >= 0 && r < matrixHeight && c >= 0 && c < matrixWidth) {
-      if (inputMatrix[r][c] == -1 && roadMatrix[r][c][dir] != 1) { //<>//
+      if (inputMatrix[r][c] == -1 && roadMatrix[r][c][dir] != 1) { //<>// //<>// //<>// //<>// //<>// //<>//
         roadMatrix[r][c][dir] = 1;
         Node thisNode = constructNode(c, r);
         list.add(thisNode);

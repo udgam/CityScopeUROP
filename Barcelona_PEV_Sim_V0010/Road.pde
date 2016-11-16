@@ -27,13 +27,14 @@ class Road {
   String roadPtFilePath;
   float roadLengthMeter;
   //int directionType; // 0 = one way(start pt to end pt); 1 = two way 
+  int direction; // Kevin, 11/15/2016
 
   Road() {
   }
 
   // class functions
   void getData(String[] _roadLines) {
-    //directionType = _directionType; //<>//
+    //directionType = _directionType; //<>// //<>// //<>// //<>// //<>// //<>//
     String[] lines = _roadLines;
     //println("there are " + lines.length + " lines");
     ptNum = lines.length;
@@ -45,7 +46,7 @@ class Road {
       float x = float(pieces[0]);
       float y = float(pieces[1]);
       float z = float(pieces[2]);
-      roadPts[i] = new PVector(x, y, z); //<>//
+      roadPts[i] = new PVector(x, y, z); //<>// //<>// //<>// //<>// //<>// //<>//
     }
   }
   

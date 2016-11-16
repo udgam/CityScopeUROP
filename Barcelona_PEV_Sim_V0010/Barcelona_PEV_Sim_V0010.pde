@@ -71,15 +71,17 @@ void setup() {
 
   prob.init("function.txt");
   
+  Utils u = new Utils();
+  
   CityGenerator c = new CityGenerator();
   
   CityOutput city = c.run();
   
   //int[][] matrix = u.fillMatrix("matrix2.txt");
   
-  //CityOutput out = u.parseInputMatrix(matrix);
+  //CityOutput city = u.parseInputMatrix(matrix); //<>// //<>// //<>// //<>// //<>// //<>//
   
-  roads = city.roads; //<>//
+  roads = city.roads; //<>// //<>// //<>// //<>// //<>// //<>//
   allBuildings = city.buildings;
   
   for (Building building: allBuildings){
@@ -91,11 +93,11 @@ void setup() {
   frameRate(9999);
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
   screenScale = width / 1920.0; //fit everything with screen size
-  scale(screenScale); //<>//
+  scale(screenScale); //<>// //<>// //<>// //<>// //<>// //<>//
   println("width = "+width);
   println("screenScale = "+screenScale);
   //if (drawEverything){
-  pg = createGraphics(1920, 1920); //<>//
+  pg = createGraphics(1920, 1920); //<>// //<>// //<>// //<>// //<>// //<>//
 
   setupScrollbars();
 
@@ -107,10 +109,10 @@ void setup() {
   // add roads
   //roadPtFile = "RD_160420.txt";
   //roads = new Roads();
-  //roads.addRoadsByRoadPtFile(roadPtFile); //<>//
+  //roads.addRoadsByRoadPtFile(roadPtFile); //<>// //<>// //<>// //<>// //<>// //<>//
   //smallerSampleRoads = new Roads();
   //smallerSampleRoads.roads.add(roads.roads.get(0));
-  //smallerSampleRoads.roads.add(roads.roads.get(1)); //<>//
+  //smallerSampleRoads.roads.add(roads.roads.get(1)); //<>// //<>// //<>// //<>// //<>// //<>//
   //roadPtFile = "RD_160420.txt";
   //roads = new Roads();
   //roads.addRoadsByRoadPtFile(roadPtFile);
@@ -128,13 +130,13 @@ void setup() {
   schedule = new Schedule();
   
   //add Pickup Spots
-  Spots = new Spots(); //<>// //<>//
+  Spots = new Spots(); //<>// //<>// //<>// //<>// //<>// //<>// //<>//
   paths = new ArrayList<Path>();
   pickups = new Spots();
-  destinations = new Spots(); //<>//
+  destinations = new Spots(); //<>// //<>// //<>// //<>// //<>// //<>//
   nodes.addNodesToAllNodes(roads);
   path = new Path(nodes);
-  //Missing PEV Construction //<>//
+  //Missing PEV Construction //<>// //<>// //<>// //<>// //<>// //<>//
   PEV miss = new PEV(roads.roads.get(0), 0.0, -1);
   miss.drawn = false;
   PEVs.addPEV(miss);
@@ -152,11 +154,11 @@ void draw() {
   
   if (! drawEverything && ! nothingDrawn) {
     for (PEV pev: PEVs.PEVs){
-      pev.drawn = false; //<>// //<>//
+      pev.drawn = false; //<>// //<>// //<>// //<>// //<>// //<>// //<>//
       pev.inRoutePath.drawn = false;
       pev.deliveringPath.drawn = false;
       nothingDrawn = true;
-    } //<>//
+    } //<>// //<>// //<>// //<>// //<>// //<>//
     
   }
   
@@ -271,7 +273,7 @@ void draw() {
         temp.drawn = true;
         paths.add(temp);
         currentJob += 1;
-        presenceOfPath = true; //<>//
+        presenceOfPath = true; //<>// //<>// //<>// //<>// //<>// //<>//
         
       }
       else {

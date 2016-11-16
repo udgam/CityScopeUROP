@@ -23,10 +23,10 @@ class Probability {
       } else if (hourValue > 23) {
         hourValue = hourValue % 24;
       }
-      int lower = (int)Math.floor(hourValue - 0.5f); //<>// //<>//
+      int lower = (int)Math.floor(hourValue - 0.5f); //<>// //<>// //<>// //<>// //<>// //<>// //<>//
       int upper = (int)Math.floor(hourValue + 0.5f);
       if (upper == 24)
-        upper = 0; //<>// //<>//
+        upper = 0; //<>// //<>// //<>// //<>// //<>// //<>// //<>//
       float slope = (values[upper] - values[lower]) / (upper - lower);
       float delta_x = hourValue - lower;
       return values[lower] + delta_x * slope;
