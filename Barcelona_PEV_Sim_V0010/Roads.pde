@@ -93,8 +93,8 @@ class Roads {
         endLineID.append(i);
       }
     }
-    println(startLineID); //<>// //<>// //<>// //<>// //<>// //<>//
-    println(endLineID); //<>// //<>// //<>// //<>// //<>// //<>//
+    //println(startLineID); //<>// //<>// //<>// //<>// //<>// //<>//
+    //println(endLineID); //<>// //<>// //<>// //<>// //<>// //<>//
     int roadCountOneWay = 0; //<>// //<>// //<>// //<>// //<>// //<>//
     for (int i = 0; i < roadCount; i ++) { //<>// //<>// //<>// //<>// //<>// //<>//
       int ptNum = endLineID.get(i) - startLineID.get(i) - 2; //<>// //<>// //<>// //<>// //<>// //<>//

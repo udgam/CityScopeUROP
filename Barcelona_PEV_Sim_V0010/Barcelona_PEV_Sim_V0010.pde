@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 10;
+int totalPEVNum = 12;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -62,7 +62,7 @@ Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 100; // 1 day in minutes - 20 minutes?
+int totalRunTime = 1000; // 1 day in minutes - 20 minutes?
 
 // TO DO - Create configurable input format...
 
@@ -79,9 +79,9 @@ void setup() {
   CityGenerator c = new CityGenerator();
 
   //CityOutput city = c.run();
-
+ //<>//
   int[][] matrix = u.fillMatrix("matrix2.txt");
-
+ //<>//
   CityOutput city = u.parseInputMatrix(matrix); //<>// //<>// //<>// //<>// //<>//
 
   roads = city.roads; //<>// //<>// //<>// //<>// //<>//
@@ -93,11 +93,11 @@ void setup() {
     totalDensity += int(building.density);
   }
 
-  frameRate(9999);
+  frameRate(9999); //<>//
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
   screenScale = width / 1920.0; //fit everything with screen size
   scale(screenScale); //<>// //<>// //<>// //<>// //<>//
-  println("width = "+width);
+  println("width = "+width); //<>//
   println("screenScale = "+screenScale);
   //if (drawEverything){
   pg = createGraphics(1920, 1920); //<>// //<>// //<>// //<>// //<>//
@@ -109,10 +109,10 @@ void setup() {
   img_BG = loadImage("BG_ALL_75DPI.png");
 
   //}
-  // add roads
+  // add roads //<>//
   //roadPtFile = "RD_160420.txt";
   //roads = new Roads();
-  //roads.addRoadsByRoadPtFile(roadPtFile); //<>// //<>// //<>// //<>// //<>//
+  //roads.addRoadsByRoadPtFile(roadPtFile); //<>// //<>// //<>// //<>// //<>// //<>//
   //smallerSampleRoads = new Roads();
   //smallerSampleRoads.roads.add(roads.roads.get(0));
   //smallerSampleRoads.roads.add(roads.roads.get(1)); //<>// //<>// //<>// //<>// //<>//
@@ -130,13 +130,13 @@ void setup() {
   //add od data
   //String d = "OD_160502_439trips_noRepeat_noIntersections.csv";
   //String withRepeats = "OD_160503_1000trips_withRepeat_noIntersections.csv";
-  jobSchedule = new ArrayList<Job>();
+  jobSchedule = new ArrayList<Job>(); //<>//
   //add Pickup Spots
   Spots = new Spots(); //<>// //<>// //<>// //<>// //<>// //<>//
-  paths = new ArrayList<Path>();
+  paths = new ArrayList<Path>(); //<>//
   pickups = new Spots();
   destinations = new Spots(); //<>// //<>// //<>// //<>// //<>//
-  nodes.addNodesToAllNodes(roads);
+  nodes.addNodesToAllNodes(roads); //<>//
   path = new Path(nodes);
   //Missing PEV Construction //<>// //<>// //<>// //<>// //<>//
   PEV miss = new PEV(roads.roads.get(0), 0.0, -1);
@@ -154,11 +154,11 @@ void draw() {
     log.logPEVLocations(PEVs.PEVs, time);
   }
 
-  if (! drawEverything && ! nothingDrawn) {
+  if (! drawEverything && ! nothingDrawn) { //<>//
     for (PEV pev : PEVs.PEVs) {
       pev.drawn = false; //<>// //<>// //<>// //<>// //<>// //<>//
       pev.inRoutePath.drawn = false;
-      pev.deliveringPath.drawn = false;
+      pev.deliveringPath.drawn = false; //<>//
       nothingDrawn = true;
     } //<>// //<>// //<>// //<>// //<>//
   }
@@ -273,7 +273,7 @@ void draw() {
             currentJob += 1;
             presenceOfPath = true; //<>// //<>// //<>// //<>//
           } else {
-            jobSchedule.get(i).jobState = "missed";
+            jobSchedule.get(i).jobState = "missed"; //<>//
             missingCount += 1;
           }
         } else {
@@ -434,6 +434,7 @@ void draw() {
         }
         drawOnce = false;
       }
+      
       log.logEvent("\nSimulation complete after total time of " + totalRunTime + " minutes.");
       log.logEvent("\n---------- Job Summary ----------");
       // TO DOs

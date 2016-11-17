@@ -46,7 +46,7 @@ class CityGenerator {
     
     while (queue.size() > 0 && roads.roads.size() < roadCount) {
       
-      println(roads.roads.size());
+      //println(roads.roads.size());
       
       // Get the earliest road...
       
@@ -85,16 +85,11 @@ class CityGenerator {
       
       }
     }
-    
-    removeAdjacentSegments();
       
     extendDeadEnds(false);
     
     removeAdjacentSegments();
     
-    extendDeadEnds(true);
-    
-    //extendDeadEnds(true) 
     printMatrix();
     
     // Loop needed?
@@ -244,8 +239,6 @@ class CityGenerator {
   
   void removeAdjacentSegments() {
     
-    Roads theseRoads = u.parseInputMatrix(matrix).roads;
-    
     // Iterate over...
     
     // If surrounded!!! - Remove
@@ -256,14 +249,14 @@ class CityGenerator {
         
         try {
           
-          final Boolean a = matrix[i-1][j-1] == -1;
-          final Boolean b = matrix[i-1][j] == -1; //
-          final Boolean c = matrix[i-1][j + 1] == -1;
-          final Boolean d = matrix[i][j-1] == -1; //
-          final Boolean e = matrix[i][j+1] == -1; //
-          final Boolean f = matrix[i+1][j-1] == -1;
-          final Boolean g = matrix[i+1][j] == -1; //
-          final Boolean h = matrix[i+1][j+1] == -1;
+          final Boolean a = matrix[i-1][j-1] == -1; // 0
+          final Boolean b = matrix[i-1][j] == -1; // 1
+          final Boolean c = matrix[i-1][j + 1] == -1; // 2
+          final Boolean d = matrix[i][j-1] == -1; // 7
+          final Boolean e = matrix[i][j+1] == -1; // 3
+          final Boolean f = matrix[i+1][j-1] == -1; // 6
+          final Boolean g = matrix[i+1][j] == -1; // 5
+          final Boolean h = matrix[i+1][j+1] == -1; // 4
           
           ArrayList<Boolean> l = new ArrayList<Boolean>() {{
               add(a);
@@ -283,8 +276,16 @@ class CityGenerator {
               count++;
           }
           
-          if (count > 4 && ! isIntersection(new PVector(j, i, 0), theseRoads)) {
+          if (count == 4 && (b && e && d && g)) {
+            // Good
+            // *** ACCOUNT FOR ACTUALLY 4 AROUND!!!
+          } else if (count == 3 && ((b && g && d) || (d && b && e) || (b && e && g) || (e && g && d))) {
+            // Good
+          } else if (count == 2 && ((b && d) || (b && e) || (e && g) || (g && d))) {
+            // Good
+          } else if (count != 2) {
             matrix[i][j] = 5000;
+            println(i, j);
           }
         } catch (Exception e) {
           // Okay.
@@ -292,18 +293,6 @@ class CityGenerator {
       }
     }
     
-  }
-  
-  Boolean isIntersection(PVector p, Roads roads) {
-    int count = 0;
-    for (Road road: roads.roads) {
-      for (PVector point : road.roadPts) {
-        if (p.x == point.x && p.y == point.y)
-          count++;    
-      }
-    }
-    println(count);
-    return count == 4;
   }
   
   HashMap<PVector, HashMap<Integer, Integer>> generateExpansionRoads(int count, Road road) {
@@ -612,7 +601,13 @@ class CityGenerator {
   
   void printMatrix() {
     // Assuming square size x size matrix
+    print(" \t");
     for (int i = 0; i < citySize; i++) {
+      print(i + "\t");
+    }
+    println();
+    for (int i = 0; i < citySize; i++) {
+      print(i + "\t");
       for (int j = 0; j < citySize; j++) {
         if (matrix[i][j] == 0)
           print("\t");
