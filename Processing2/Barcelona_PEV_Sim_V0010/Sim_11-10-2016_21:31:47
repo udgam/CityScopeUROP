@@ -1,0 +1,12 @@
+Simulation initialized with 10 available PEVs.
+Using LogStatus type of NoPrint.
+
+Simulation complete after total time of 2000 minutes.
+
+---------- Job Summary ----------
+
+Missed Job Count = 309 jobs.
+
+Delivered Job Count = 661 jobs.
+
+Job Completion Percentage = 661/970 = 68.144325%.

@@ -114,6 +114,7 @@ class Path {
       }
       if (node.point == startPt) {
         beginning = node;
+        node.activity += 1;
       }
     }
     
@@ -125,6 +126,7 @@ class Path {
         int parentid = parentArray[current.id];
         //println(parentid);
         current = nodes.allNodes.get(parentid);
+        nodes.allNodes.get(parentid).activity += 1;
         finalPath.add(current);
       }
       //println(finalPath);
