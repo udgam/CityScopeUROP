@@ -62,7 +62,7 @@ Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 1000; // 1 day in minutes - 20 minutes?
+int totalRunTime = 500; // 1 day in minutes - 20 minutes?
 
 // TO DO - Create configurable input format...
 
@@ -423,12 +423,13 @@ void draw() {
         stroke(265, 265, 265);
         fill(0, 0, 0);
         rectMode(CORNERS);
-        rect(50.0, 50.0, 720.0, 720.0);
+        rect(70.0, 70.0, 350.0, 350.0);
         strokeWeight(10);
-        float factor = 720.0/15;
-        float start = 50.0;
+        float factor = 20;
+        float start = 50;
+        
         for (Node node : nodes.allNodes) {
-          fill(node.activity*10,node.activity*10,node.activity*10);
+          stroke(float(265 - node.activity*100),265 - float(node.activity*10),265 - float(node.activity*10));
           point(factor*node.point.x + start, factor*node.point.y + start);
           println("Node at "+node.point+" has activity of "+node.activity );
         }
