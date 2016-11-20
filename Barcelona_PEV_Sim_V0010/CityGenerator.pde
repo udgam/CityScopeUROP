@@ -1,7 +1,7 @@
 class CityGenerator {
   
   int maxBuildingDensity = 25;
-  int citySize = 15;
+  int citySize = 12;
   float roadDensity = 0.4;
   ArrayList<Road> queue = new ArrayList<Road>();
   int[][] matrix = new int[citySize][citySize];
@@ -9,29 +9,121 @@ class CityGenerator {
   ArrayList<Building> buildings = new ArrayList<Building>();
   Utils u = new Utils();
   
-  void init() {
+  PVector right = new PVector(0, 1);
+  PVector left = new PVector(0, -1);
+  PVector up = new PVector(-1, 0);
+  PVector down = new PVector(1, 0);
   
-    // Nothing critical here, yet.
+  Road generateFirstRoad() {
+    int randomYStart = int(random(0, citySize/5));
+    Road resultRoad = new Road();
+    resultRoad.roadPts = new PVector[citySize];
+    for (int row = 0; row < citySize; row++) {
+      matrix[row][randomYStart] = -1;
+      resultRoad.roadPts[row] = new PVector(randomYStart, row);
+    }
+    resultRoad.direction = down;
+    return resultRoad;
+  }
+  
+  Road extendInDirection(PVector direction, PVector startPoint) {
+    Road resultRoad = new Road();
+    resultRoad.direction = direction;
+    int rowStart = int(startPoint.y);
+    int colStart = int(startPoint.x);
+    ArrayList<PVector> newPoints = new ArrayList<PVector>();
+    if (direction == right) {
+      for (int col = colStart + 1; col < citySize; col++) {
+        if (isValidRoadPoint(rowStart, col, right)) {
+          matrix[rowStart][col] = -1;
+          newPoints.add(new PVector(col, rowStart));
+          if (col != citySize - 1 && matrix[rowStart][col + 1] == -1) {
+            break;
+          }
+        } else {
+          break;
+        }
+      }
+    } else if (direction == down) {
+      for (int row = rowStart + 1; row < citySize; row++) {
+        if (isValidRoadPoint(row, colStart, down)) {
+          matrix[row][colStart] = -1;
+          newPoints.add(new PVector(colStart, row));
+          if (row != citySize - 1 && matrix[row + 1][colStart] == -1) {
+            break;
+          }
+        } else {
+          break;
+        }
+      }
+    }
+    resultRoad.roadPts = new PVector[newPoints.size()];
+    for (int i = 0; i < newPoints.size(); i++) {
+      resultRoad.roadPts[i] = newPoints.get(i);
+    }
+    return resultRoad;
+  }
+  
+  Boolean isValidRoadPoint(int row, int col, PVector direction) {
+    if (direction == right) {
+      // Check the matrix around [row][col] for any illegal...
+      try {
+        Boolean oneAbove = matrix[row - 1][col] == -1;
+        Boolean oneBelow = matrix[row + 1][col] == -1;
+        return ! (oneAbove || oneBelow);
+      } catch (Exception e) {
+        println(e);
+        return true;
+      }
+    } else if (direction == down) {
+      // Check the matrix around [row][col] for any illegal...
+      try {
+        Boolean oneRight = matrix[row][col + 1] == -1;
+        Boolean oneLeft = matrix[row][col - 1] == -1;
+        return ! (oneRight || oneLeft);
+      } catch (Exception e) {
+        return true;
+      }
+    } else return null;
+  }
+  
+  ArrayList<PVector> getRoadStartPoints(Road currentRoad, PVector extensionDirection) {
+    ArrayList<PVector> result = new ArrayList<PVector>();
     
+    int roadLength = currentRoad.roadPts.length;
+    
+    int randomCount = int(random(1, roadLength/3));
+    
+    ArrayList<Integer> distArray = new ArrayList<Integer>();
+    
+    for (int i = 0; i < randomCount; i++) {
+      int randomStart = int(random(1, roadLength/2));
+      while (distArray.indexOf(randomStart) > -1)
+        randomStart = int(random(1, roadLength/2));
+      distArray.add(randomStart);
+    }
+    
+    try {
+    
+      for (int j = 0; j < randomCount; j++) {
+        if (extensionDirection == right) {
+          result.add(new PVector(currentRoad.roadPts[0].x, min(currentRoad.roadPts[0].y  + distArray.get(j), citySize - 1)));
+        } else if (extensionDirection == down) {
+          result.add(new PVector(min(currentRoad.roadPts[0].x  + distArray.get(j), citySize - 1), currentRoad.roadPts[0].y));
+        }
+      }
+    
+    } catch (Exception e) {
+      //
+    }
+    
+    
+    return result;
   }
   
   CityOutput run() {
     
-    // Return a city.
-    
-    // Step 0 - Init.
-    
-    // Step 1 - Get random start point in top left.
-    int start_x = (int)random(citySize/4);
-    int start_y = (int)random(citySize/4);
-    
-    // Step 2 - Generate road from this start point, with partition and length
-    
-    int roadLength = (int)random(citySize/2, citySize);
-    
-    int p = (int)random(roadLength);
-    
-    Road firstRoad = generateRoad(start_x, start_y, (int)random(2), roadLength, p);
+    Road firstRoad = generateFirstRoad();
     
     Road firstRoadBack = getReverse(firstRoad);
     
@@ -46,53 +138,31 @@ class CityGenerator {
     
     while (queue.size() > 0 && roads.roads.size() < roadCount) {
       
-      //println(roads.roads.size());
-      
       // Get the earliest road...
       
-      Road current = queue.remove(0);
+      Road current = queue.get(0);
       
-      int newDir = 0;
+      queue.remove(0);
       
-      if (current.direction == 0)
-        newDir = 1;
+      PVector theDir;
       
-      // We want to randomly generate roads along the perpendicular direction...
+      if (current.direction == down)
+        theDir = right;
+      else
+        theDir = down;
+        
+      ArrayList<PVector> startPoints = getRoadStartPoints(current, theDir);
       
-      int randomRoadCount = (int)random(1, current.roadPts.length * 0.5);
-      
-      HashMap<PVector, HashMap<Integer, Integer>> expansions = generateExpansionRoads(randomRoadCount, current);
-      
-      if (expansions != null) {
-      
-        for (PVector start : expansions.keySet()) {
-          
-          int theLength = (int)expansions.get(start).keySet().toArray()[0];
-          
-          int theP = (int)expansions.get(start).get(theLength);
-          
-          Road theRoad = generateRoad((int)start.x, (int)start.y, newDir, theLength, theP);
-      
-          Road roadBack = getReverse(firstRoad);
-          
-          roads.roads.add(theRoad);
-          roads.roads.add(roadBack);
-          
-          // Add this first road to queue...
-          
-          queue.add(theRoad);
-        }
-      
+      for (PVector start: startPoints) {
+        Road newRoad = extendInDirection(theDir, start);
+        Road back = getReverse(newRoad);
+        roads.roads.add(newRoad);
+        roads.roads.add(back);
+        queue.add(newRoad);
       }
     }
-      
-    extendDeadEnds(false);
-    
-    removeAdjacentSegments();
     
     printMatrix();
-    
-    // Loop needed?
     
     Utils u = new Utils();
     
@@ -284,7 +354,7 @@ class CityGenerator {
           } else if (count == 2 && ((b && d) || (b && e) || (e && g) || (g && d))) {
             // Good
           } else if (count != 2) {
-            matrix[i][j] = 5000;
+            matrix[i][j] = 0;
             println(i, j);
           }
         } catch (Exception e) {
@@ -292,56 +362,6 @@ class CityGenerator {
         }
       }
     }
-    
-  }
-  
-  HashMap<PVector, HashMap<Integer, Integer>> generateExpansionRoads(int count, Road road) {
-    
-    HashMap<PVector, HashMap<Integer, Integer>> map = new HashMap<PVector, HashMap<Integer, Integer>>();
-    
-    PVector startPoint = road.roadPts[0];
-      
-    ArrayList<Integer> distArray = new ArrayList<Integer>();
-    
-    int perpDir = -1;
-    int xMul = 0;
-    int yMul = 0;
-    
-    if (road.direction == 0) {
-      perpDir = 1;
-      yMul = 1;
-    } else if (road.direction == 1) {
-      perpDir = 0;
-      xMul = 1;
-    }
-      
-    for (int i = 0; i < count; i++) {
-    
-       // Get a random value for start
-       
-       int dist = (int)random(road.roadPts.length);
-       
-       while (distArray.indexOf(dist) != -1 || distArray.indexOf(dist - 1) != -1 || distArray.indexOf(dist + 1) != -1) {
-         dist = (int)random(road.roadPts.length);
-       }
-       
-       distArray.add(dist);
-       
-       // Okay, so now we have our distance...
-       
-       PVector thisStart = new PVector(startPoint.x + xMul * dist, startPoint.y + yMul * dist, 0);
-       
-       HashMap<Integer, Integer> numMap = getDistancePartitionForStart(thisStart, perpDir);
-       
-       if (numMap == null) {
-         // Skip here..., not a good place to expand...
-         return null;
-       }
-       
-       map.put(thisStart, numMap);
-    }
-    
-    return map;
     
   }
   
@@ -484,118 +504,12 @@ class CityGenerator {
       result.roadPts[road.roadPts.length - 1 - i] = road.roadPts[i];
     }
     
-    if (road.direction == 0)
-      result.direction = 1;
+    if (road.direction == down)
+      result.direction = right;
     else
-      result.direction = 0;
+      result.direction = down;
     
     return result;
-    
-  }
-  
-  Road generateRoad(int start_x, int start_y, int direction, int roadLength, int p) { // 0 = up/down, 1 = left/right
-    
-    // Step 0 - Pick length of road...
-    
-    // Partition point could be anywhere from 0 to roadLength - 1...
-    // We need to ensure that this does not go out of bounds..
-    
-    int realP = p;
-    int param = -1;
-    if (direction == 0)
-      param = start_y;
-    else
-      param = start_x;
-    if (param - p < 0) {
-      realP = param;
-    } else if (param + p > citySize - 1) {
-      realP = citySize - 1 - param;
-    }
-    
-    /*println("First partition..." + p);
-    println("Real partition... " + realP);
-    println("Start x = " + start_x);
-    println("Start y = " + start_y);
-    println("Direction = " + direction);
-    println("Length = " + roadLength);*/
-    
-    // Now, we are good with partition.
-    
-    p = realP;
-    
-    // Now, iterate over and set to -1.
-    
-    ArrayList<Integer> xValues = new ArrayList<Integer>();
-    ArrayList<Integer> yValues = new ArrayList<Integer>();
-    
-    // Relates x (keys) to y (values) ^^^
-    
-    if (direction == 0) {
-      // First, go up...
-      
-      int j = start_y;
-      
-      if (p > 0) {
-      
-        for (int i = start_y; i >= start_y - p; i--) {
-          matrix[i][start_x] = -1;
-          xValues.add(start_x);
-          yValues.add(i);
-        }
-        
-        j++;
-      
-      }
-      
-      // Then, go down...
-      
-      for (int i = j; i < roadLength + start_y; i++) {
-        matrix[i][start_x] = -1;
-        xValues.add(start_x);
-        yValues.add(i);
-      }
-    } else if (direction == 1) {
-      // First, go left...
-      
-      int j = start_x;
-      
-      if (p > 0) {
-      
-        for (int i = start_x; i >= start_x - p; i--) {
-          matrix[start_y][i] = -1;
-          xValues.add(i);
-          yValues.add(start_y);
-        }
-        
-        j++;
-      
-      }
-      
-      // Then, go right...
-      
-      for (int i = j; i < roadLength + start_x; i++) {
-        matrix[start_y][i] = -1;
-        xValues.add(i);
-        yValues.add(start_y);
-      }
-    }
-    
-    //println(xValues);
-    //println(yValues);
-    
-    // NOW - Keep track of those points so we can add Roads to our queue!!!
-    
-    Road road = new Road();
-    
-    road.roadPts = new PVector[roadLength];
-    
-    for (int i = 0; i < roadLength; i++) {
-      road.roadPts[i] = new PVector(xValues.get(i), yValues.get(i), 0);
-    }
-    
-    road.direction = direction;
-    
-    return road;
     
   }
   

@@ -27,7 +27,7 @@ class Road {
   String roadPtFilePath;
   float roadLengthMeter;
   //int directionType; // 0 = one way(start pt to end pt); 1 = two way 
-  int direction; // Kevin, 11/15/2016
+  PVector direction; // Kevin, 11/15/2016
 
   Road() {
   }

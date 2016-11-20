@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 12;
+int totalPEVNum = 30;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -58,6 +58,8 @@ int totalJobs = 0;
 boolean drawOnce = true;
 //Implement “endurance” waiting queue that will allow a job to wait for some random time (10-15 minutes) before being labeled as missed.
 
+int waitTime = 50; // maxWaitTime
+
 Boolean makeJobs = true;
 
 LogManager log = new LogManager();
@@ -78,24 +80,24 @@ void setup() {
 
   CityGenerator c = new CityGenerator();
 
-  //CityOutput city = c.run();
+  CityOutput city = c.run();
  //<>//
   int[][] matrix = u.fillMatrix("matrix2.txt");
- //<>//
-  CityOutput city = u.parseInputMatrix(matrix); //<>// //<>// //<>// //<>// //<>//
 
-  roads = city.roads; //<>// //<>// //<>// //<>// //<>//
-  allBuildings = city.buildings;
+  //CityOutput city = u.parseInputMatrix(matrix); //<>// //<>// //<>// //<>//
+
+  roads = city.roads; //<>// //<>// //<>// //<>//
+  allBuildings = city.buildings; //<>//
 
   for (Building building : allBuildings) {
     building.nearestRoad = roads.findRoadWithLocation(building.position);
     building.nearestPt = roads.findPVectorWithLocation(building.position);
     totalDensity += int(building.density);
-  }
+  } //<>//
 
   frameRate(9999); //<>//
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
-  screenScale = width / 1920.0; //fit everything with screen size
+  screenScale = width / 1920.0; //fit everything with screen size //<>//
   scale(screenScale); //<>// //<>// //<>// //<>// //<>//
   println("width = "+width); //<>//
   println("screenScale = "+screenScale);
@@ -107,10 +109,10 @@ void setup() {
   smooth(8); //2,3,4, or 8
 
   img_BG = loadImage("BG_ALL_75DPI.png");
-
+ //<>//
   //}
   // add roads //<>//
-  //roadPtFile = "RD_160420.txt";
+  //roadPtFile = "RD_160420.txt"; //<>//
   //roads = new Roads();
   //roads.addRoadsByRoadPtFile(roadPtFile); //<>// //<>// //<>// //<>// //<>// //<>//
   //smallerSampleRoads = new Roads();
@@ -128,13 +130,13 @@ void setup() {
   PEVs.initiate(totalPEVNum);
 
   //add od data
-  //String d = "OD_160502_439trips_noRepeat_noIntersections.csv";
+  //String d = "OD_160502_439trips_noRepeat_noIntersections.csv"; //<>//
   //String withRepeats = "OD_160503_1000trips_withRepeat_noIntersections.csv";
   jobSchedule = new ArrayList<Job>(); //<>//
-  //add Pickup Spots
+  //add Pickup Spots //<>//
   Spots = new Spots(); //<>// //<>// //<>// //<>// //<>// //<>//
   paths = new ArrayList<Path>(); //<>//
-  pickups = new Spots();
+  pickups = new Spots(); //<>//
   destinations = new Spots(); //<>// //<>// //<>// //<>// //<>//
   nodes.addNodesToAllNodes(roads); //<>//
   path = new Path(nodes);
@@ -152,11 +154,11 @@ void draw() {
 
   if ((logStatus == LogStatus.PEVPrint || logStatus == LogStatus.DetailedPrint)) { // && time % 10 == 0 Only execute every 10 timesteps
     log.logPEVLocations(PEVs.PEVs, time);
-  }
+  } //<>//
 
   if (! drawEverything && ! nothingDrawn) { //<>//
     for (PEV pev : PEVs.PEVs) {
-      pev.drawn = false; //<>// //<>// //<>// //<>// //<>// //<>//
+      pev.drawn = false; //<>// //<>// //<>// //<>// //<>// //<>// //<>//
       pev.inRoutePath.drawn = false;
       pev.deliveringPath.drawn = false; //<>//
       nothingDrawn = true;
@@ -165,8 +167,8 @@ void draw() {
 
   if (makeJobs) {
 
-    float currentProb = prob.getValue(time)*100;
-    float randomJobProb = random(100);
+    float currentProb = prob.getValue(time);
+    float randomJobProb = random(1);
     if (randomJobProb <= currentProb) {
       jobPresent = true;
     } else {
@@ -242,7 +244,7 @@ void draw() {
         }
       }
       for (int i = 0; i <= jobSchedule.size() - 1; i++) {
-        if (jobSchedule.get(i).jobCreated >= time - 15 &&  jobSchedule.get(i).jobState == "notStarted") {
+        if (jobSchedule.get(i).jobCreated >= time - waitTime &&  jobSchedule.get(i).jobState == "notStarted") {
           if (PEVs.findNearestPEV(jobSchedule.get(i).pickupLocation) >= 0) {
             Job current = jobSchedule.get(i);
             jobSchedule.get(i).startTime = time;
@@ -271,7 +273,7 @@ void draw() {
             temp.drawn = true;
             paths.add(temp);
             currentJob += 1;
-            presenceOfPath = true; //<>// //<>// //<>// //<>//
+            presenceOfPath = true; //<>// //<>// //<>// //<>// //<>//
           } else {
             jobSchedule.get(i).jobState = "missed"; //<>//
             missingCount += 1;
