@@ -14,16 +14,43 @@ class CityGenerator {
   PVector up = new PVector(-1, 0);
   PVector down = new PVector(1, 0);
   
-  Road generateFirstRoad() {
-    int randomYStart = int(random(0, citySize/5));
-    Road resultRoad = new Road();
-    resultRoad.roadPts = new PVector[citySize];
+  float extProbability = 0.7;
+  
+  ArrayList<Road> generateFirstRoads() {
+    ArrayList<Road> result = new ArrayList<Road>();
+    Road roadOne = new Road();
+    roadOne.direction = down;
+    roadOne.roadPts = new PVector[citySize];
     for (int row = 0; row < citySize; row++) {
-      matrix[row][randomYStart] = -1;
-      resultRoad.roadPts[row] = new PVector(randomYStart, row);
+      matrix[row][0] = -1;
+      roadOne.roadPts[row] = new PVector(0, row);
     }
-    resultRoad.direction = down;
-    return resultRoad;
+    result.add(roadOne);
+    Road roadTwo = new Road();
+    roadTwo.direction = down;
+    roadTwo.roadPts = new PVector[citySize];
+    for (int row = 0; row < citySize; row++) {
+      matrix[row][citySize - 1] = -1;
+      roadOne.roadPts[row] = new PVector(citySize - 1, row);
+    }
+    result.add(roadTwo);
+    Road roadThree = new Road();
+    roadThree.direction = right;
+    roadThree.roadPts = new PVector[citySize];
+    for (int col = 0; col < citySize; col++) {
+      matrix[0][col] = -1;
+      roadThree.roadPts[col] = new PVector(col, 0);
+    }
+    result.add(roadThree);
+    Road roadFour = new Road();
+    roadFour.direction = right;
+    roadFour.roadPts = new PVector[citySize];
+    for (int col = 0; col < citySize; col++) {
+      matrix[citySize - 1][col] = -1;
+      roadFour.roadPts[col] = new PVector(col, citySize - 1);
+    }
+    result.add(roadFour);
+    return result;
   }
   
   Road extendInDirection(PVector direction, PVector startPoint) {
@@ -56,6 +83,26 @@ class CityGenerator {
           break;
         }
       }
+    } else if (direction == left) {
+      // Backwards case...
+      for (int col = colStart - 1; col >= 0; col--) {
+        if (isValidRoadPoint(rowStart, col, left)) {
+          matrix[rowStart][col] = -1;
+          if (col != 0 && matrix[rowStart][col - 1] == -1)
+            break;
+        } else break;
+      }
+      return null;
+    } else if (direction == up) {
+      // Backwards case...
+      for (int row = rowStart - 1; row >= 0; row--) {
+        if (isValidRoadPoint(row, colStart, up)) {
+          matrix[row][colStart] = -1;
+          if (row != 0 && matrix[row - 1][colStart] == -1)
+            break;
+        } else break;
+      }
+      return null;
     }
     resultRoad.roadPts = new PVector[newPoints.size()];
     for (int i = 0; i < newPoints.size(); i++) {
@@ -65,7 +112,7 @@ class CityGenerator {
   }
   
   Boolean isValidRoadPoint(int row, int col, PVector direction) {
-    if (direction == right) {
+    if (direction == right || direction == left) {
       // Check the matrix around [row][col] for any illegal...
       try {
         Boolean oneAbove = matrix[row - 1][col] == -1;
@@ -75,7 +122,7 @@ class CityGenerator {
         println(e);
         return true;
       }
-    } else if (direction == down) {
+    } else if (direction == down || direction == up) {
       // Check the matrix around [row][col] for any illegal...
       try {
         Boolean oneRight = matrix[row][col + 1] == -1;
@@ -85,6 +132,42 @@ class CityGenerator {
         return true;
       }
     } else return null;
+  }
+  
+  PVector getOppositeDirection(PVector dir) {
+  
+    if (dir == right) {
+      return left;
+    } else if (dir == down) {
+      return up;
+    }
+    
+    else return null;
+  
+  }
+  
+  void extendAllRoads(Roads roads) {
+    
+    // Goal - extend all roads randomly with extProbability...
+    
+    for (Road r: roads.roads) {
+    
+      float rand = random(1);
+      
+      if (rand <= extProbability) {
+      
+        // Do extend in opposite direction...
+        
+        PVector newDir = getOppositeDirection(r.direction);
+        
+        if (r.roadPts.length > 0 && r.roadPts[0] != null) {
+          Road n = extendInDirection(newDir, r.roadPts[0]);
+        }
+        
+      }
+    
+    }
+    
   }
   
   ArrayList<PVector> getRoadStartPoints(Road currentRoad, PVector extensionDirection) {
@@ -117,22 +200,22 @@ class CityGenerator {
       //
     }
     
-    
     return result;
   }
   
   CityOutput run() {
     
-    Road firstRoad = generateFirstRoad();
+    ArrayList<Road> firstFour = generateFirstRoads();
     
-    Road firstRoadBack = getReverse(firstRoad);
+    for (Road r : firstFour) {
+      Road back = getReverse(r);
+      roads.roads.add(r);
+      roads.roads.add(back);
+    }
     
-    roads.roads.add(firstRoad);
-    roads.roads.add(firstRoadBack);
+    queue.add(firstFour.get(0));
     
-    // Add this first road to queue...
-    
-    queue.add(firstRoad);
+    queue.add(firstFour.get(2));
     
     int roadCount = (int)(roadDensity * pow(citySize, 2));
     
@@ -162,333 +245,13 @@ class CityGenerator {
       }
     }
     
+    extendAllRoads(roads);
+    
     printMatrix();
     
     Utils u = new Utils();
     
     return u.parseInputMatrix(matrix);
-    
-  }
-  
-  void extendDeadEnds(Boolean doTrim) {
-    Utils u = new Utils();
-    for (int i = 0; i < citySize; i++) {
-      for (int j = 0; j < citySize; j++) {
-        if (matrix[i][j] == -1 && u.getAdjacentRoadCells(matrix, i, j).size() == 1 && i != 0 && i != citySize -1 && j != 0 && j != citySize -1) {
-          // We have a dead end case...
-          // From this point, we want to try to extend to edge...
-          
-          if (doTrim) {
-            matrix[i][j] = 0;
-          } else {
-            PVector here = new PVector(j, i, 0);
-            PVector top = new PVector(j, 0, 0);
-            PVector right = new PVector(citySize - 1, i, 0);
-            PVector bottom = new PVector(j, citySize - 1, 0);
-            PVector left = new PVector(0, i, 0);
-            float[] l = new float[4];
-            l[0] = PVector.dist(here, top);
-            l[1] = PVector.dist(here, right);
-            l[2] = PVector.dist(here, bottom);
-            l[3] = PVector.dist(here, left);
-            Boolean shift = false;
-            if (min(l) == PVector.dist(here, top)) {
-              // Extend up to top, if possible...
-              Boolean passed = false;
-              for (int row = i; row >= 0; row--) {
-                try {
-                  if (matrix[row][j-1] == -1 || matrix[row][j+1] == -1) {
-                    if (passed) {
-                      shift = true;
-                      break;
-                    } 
-                    else {
-                      passed = true;
-                    }
-                  } else {
-                    if (passed)
-                      passed = false;
-                    matrix[row][j] = -1;
-                  }
-                } catch(Exception e) {
-                  //
-                }
-                if (shift) {
-                  // Go on to next
-                }
-              }  
-            }
-            
-            if (shift || min(l) == PVector.dist(here, right)) {
-              shift = false;
-              // Extend over to right, if possible...
-              Boolean passed = false;
-              for (int col = j; col < citySize; col++) {
-                try {
-                  if (matrix[i - 1][col] == -1 || matrix[i + 1][col] == -1) {
-                    if (passed) {
-                      shift = true;
-                      break;
-                    } 
-                    else {
-                      passed = true;
-                    } 
-                  } else {
-                    if (passed)
-                      passed = false;
-                    matrix[i][col] = -1;
-                  }
-                } catch(Exception e) {
-                  //
-                }
-                if (shift) {
-                  // Go on to next
-                }
-              }  
-            }
-            
-            if (shift || min(l) == PVector.dist(here, bottom)) {
-              shift = false;
-              // Extend over to right, if possible...
-              Boolean passed = false;
-              for (int row = i; row < citySize; row++) {
-                try {
-                  if (matrix[row][j - 1] == -1 || matrix[row][j + 1] == -1) {
-                    if (passed) {
-                      shift = true;
-                      break;
-                    } 
-                    else {
-                      passed = true;
-                    } 
-                  } else {
-                    if (passed)
-                      passed = false;
-                    matrix[row][j] = -1;
-                  }
-                } catch(Exception e) {
-                  //
-                }
-                if (shift) {
-                  // Go on to next
-                }
-              }  
-            }
-            
-            if (shift || min(l) == PVector.dist(here, left)) {
-              // Extend up to top, if possible...
-              Boolean passed = false;
-              for (int col = i; col >= 0; col--) {
-                try {
-                  if (matrix[i - 1][col] == -1 || matrix[i + 1][col] == -1) {
-                    if (passed) {
-                      shift = true;
-                      break;
-                    } 
-                    else {
-                      passed = true;
-                    }
-                  } else {
-                    if (passed)
-                      passed = false;
-                    matrix[i][col] = -1;
-                  }
-                } catch(Exception e) {
-                  //
-                }
-                if (shift) {
-                  // Go on to next
-                }
-              }  
-            }
-          }
-        }
-      }
-    }
-  }
-  
-  void removeAdjacentSegments() {
-    
-    // Iterate over...
-    
-    // If surrounded!!! - Remove
-    
-    for (int i = 0; i < citySize; i++) {
-      for (int j = 0; j < citySize; j++) {
-        // i = row, j = col
-        
-        try {
-          
-          final Boolean a = matrix[i-1][j-1] == -1; // 0
-          final Boolean b = matrix[i-1][j] == -1; // 1
-          final Boolean c = matrix[i-1][j + 1] == -1; // 2
-          final Boolean d = matrix[i][j-1] == -1; // 7
-          final Boolean e = matrix[i][j+1] == -1; // 3
-          final Boolean f = matrix[i+1][j-1] == -1; // 6
-          final Boolean g = matrix[i+1][j] == -1; // 5
-          final Boolean h = matrix[i+1][j+1] == -1; // 4
-          
-          ArrayList<Boolean> l = new ArrayList<Boolean>() {{
-              add(a);
-              add(b);
-              add(c);
-              add(d);
-              add(e);
-              add(f);
-              add(g);
-              add(h);
-          }};
-          
-          int count = 0;
-          
-          for (int k = 0; k < l.size(); k++) {
-            if (l.get(k))
-              count++;
-          }
-          
-          if (count == 4 && (b && e && d && g)) {
-            // Good
-            // *** ACCOUNT FOR ACTUALLY 4 AROUND!!!
-          } else if (count == 3 && ((b && g && d) || (d && b && e) || (b && e && g) || (e && g && d))) {
-            // Good
-          } else if (count == 2 && ((b && d) || (b && e) || (e && g) || (g && d))) {
-            // Good
-          } else if (count != 2) {
-            matrix[i][j] = 0;
-            println(i, j);
-          }
-        } catch (Exception e) {
-          // Okay.
-        }
-      }
-    }
-    
-  }
-  
-  int getRealP(int x, int y, int p, int direction) {
-    int realP = p;
-    int param = -1;
-    if (direction == 0)
-      param = y;
-    else
-      param = x;
-    if (param - p < 0) {
-      realP = param;
-    } else if (param + p > citySize - 1) {
-      realP = citySize - 1 - param;
-    }
-    return realP;
-  }
-  
-  HashMap<Integer, Integer> getDistancePartitionForStart(PVector start, int direction) { // direction refers to expansion direction
-  
-    HashMap<Integer, Integer> theMap = new HashMap<Integer, Integer>();
-  
-    int row = (int)start.y;
-    int col = (int)start.x;
-    int roadLength = -1;
-    int p = -1;
-    
-    Boolean isValid = false;
-    
-    int index = 0;
-    
-    while (! isValid && index < 15) {
-      
-      index++;
-      
-      isValid = true;
-      
-      roadLength = (int)random(citySize/4, citySize*2/3);
-    
-      p = (int)random(roadLength);
-      
-      p = getRealP(col, row, p, direction);
-      
-      if (direction == 0 && start.y + roadLength > citySize - 1) {
-        isValid = false;
-      } else if (direction == 1 && start.x + roadLength > citySize - 1) {
-        isValid = false;
-      } else if (direction == 0) {
-        // First, go up...
-        
-        int j = row;
-        
-        if (p > 0) {
-        
-          for (int i = row; i >= row - p; i--) {
-            try {
-              if (i != row && (matrix[i][col-1] == -1 || matrix[i][col+1] == -1)) {
-                isValid = false;
-                break;
-              }
-            } catch (Exception e) {
-              // Move on...
-            }
-          }
-          
-          j++;
-        
-        }
-        
-        // Then, go down...
-        
-        for (int i = j; i < roadLength; i++) {
-            try {
-              if (i != j && (matrix[i][col-1] == -1 || matrix[i][col+1] == -1)) {
-                isValid = false;
-                break;
-              }
-            } catch (Exception e) {
-              // Move on...
-            }
-        }
-        
-      } else if (direction == 1) {
-        // First, go left...
-        
-        int j = col;
-        
-        if (p > 0) {
-        
-          for (int i = col; i >= col - p; i--) {
-            try {
-              if (i != col && (matrix[row - 1][i] == -1 || matrix[row + 1][i] == -1)) {
-                isValid = false;
-                break;
-              }
-            } catch (Exception e) {
-              // Move on...
-            }
-          }
-          
-          j++;
-        
-        }
-        
-        // Then, go down...
-        
-        for (int i = j; i < roadLength; i++) {
-            try {
-              if (i != j && (matrix[row - 1][i] == -1 || matrix[row + 1][i] == -1)) {
-                isValid = false;
-                break;
-              }
-            } catch (Exception e) {
-              // Move on...
-            }
-        }
-      }
-    }
-    
-    if (index == 15) {
-      // Can't find a valid...
-      return null;
-    }
-    
-    theMap.put(roadLength, p);
-    
-    return theMap;
     
   }
   
@@ -504,10 +267,7 @@ class CityGenerator {
       result.roadPts[road.roadPts.length - 1 - i] = road.roadPts[i];
     }
     
-    if (road.direction == down)
-      result.direction = right;
-    else
-      result.direction = down;
+    result.direction = road.direction;
     
     return result;
     
