@@ -66,6 +66,8 @@ LogManager log = new LogManager();
 
 int totalRunTime = 500; // 1 day in minutes - 20 minutes?
 
+float simSpeed = 60; // (seconds/frame)
+
 // TO DO - Create configurable input format...
 
 LogStatus logStatus = LogStatus.NoPrint;
@@ -74,7 +76,7 @@ void setup() {
 
   log.init(false);
 
-  prob.init("function.txt");
+  prob.init("demand.txt");
 
   Utils u = new Utils();
 
