@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 30;
+int totalPEVNum = 10;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -58,7 +58,7 @@ int totalJobs = 0;
 boolean drawOnce = true;
 //Implement “endurance” waiting queue that will allow a job to wait for some random time (10-15 minutes) before being labeled as missed.
 
-int waitTime = 50; // maxWaitTime
+int waitTime = 15; // maxWaitTime
 
 Boolean makeJobs = true;
 
@@ -70,7 +70,7 @@ float simSpeed = 60; // (seconds/frame)
 
 // TO DO - Create configurable input format...
 
-LogStatus logStatus = LogStatus.NoPrint;
+LogStatus logStatus = LogStatus.DetailedPrint;
 
 void setup() {
 

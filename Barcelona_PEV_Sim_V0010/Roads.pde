@@ -76,9 +76,9 @@ class Roads {
   }
 
   void addRoadsByRoadPtFile(String _roadPtFile) {
-    roadPtFile = _roadPtFile; //<>// //<>// //<>// //<>// //<>// //<>//
-    String[] allLines = loadStrings(roadPtFile); //<>// //<>// //<>// //<>// //<>// //<>//
-    //println("there are " + lines.length + " lines"); //<>// //<>// //<>// //<>// //<>// //<>//
+    roadPtFile = _roadPtFile; //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+    String[] allLines = loadStrings(roadPtFile); //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+    //println("there are " + lines.length + " lines"); //<>// //<>// //<>// //<>// //<>// //<>// //<>//
     int totalLines = allLines.length;
     int roadCount = 0;
     IntList startLineID = new IntList();
@@ -93,13 +93,13 @@ class Roads {
         endLineID.append(i);
       }
     }
-    //println(startLineID); //<>// //<>// //<>// //<>// //<>// //<>//
-    //println(endLineID); //<>// //<>// //<>// //<>// //<>// //<>//
-    int roadCountOneWay = 0; //<>// //<>// //<>// //<>// //<>// //<>//
-    for (int i = 0; i < roadCount; i ++) { //<>// //<>// //<>// //<>// //<>// //<>//
-      int ptNum = endLineID.get(i) - startLineID.get(i) - 2; //<>// //<>// //<>// //<>// //<>// //<>//
+    //println(startLineID); //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+    //println(endLineID); //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+    int roadCountOneWay = 0; //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+    for (int i = 0; i < roadCount; i ++) { //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+      int ptNum = endLineID.get(i) - startLineID.get(i) - 2; //<>// //<>// //<>// //<>// //<>// //<>// //<>//
       String[] roadLines = subset(allLines, startLineID.get(i) + 2, ptNum);
-      if (allLines[startLineID.get(i)+1].indexOf("one way") != -1) { //<>// //<>// //<>// //<>// //<>// //<>//
+      if (allLines[startLineID.get(i)+1].indexOf("one way") != -1) { //<>// //<>// //<>// //<>// //<>// //<>// //<>//
         // one way
 
         // add a road object

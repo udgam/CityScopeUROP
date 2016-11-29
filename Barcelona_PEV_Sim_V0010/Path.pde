@@ -95,7 +95,7 @@ class Path {
         }
       }
       println("No path found");
-      println(destinationPt);
+      println(startPt + " " + destinationPt);
       return null;
     }
   }
@@ -122,6 +122,7 @@ class Path {
     if (current == null || beginning == null) {
       return null;
     } else {
+      println("Parent Array: " + parentArray);
       while (parentArray[current.id] != beginningID) {
         int parentid = parentArray[current.id];
         //println(parentid);

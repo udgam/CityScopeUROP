@@ -248,8 +248,8 @@ public class Utils {
     int rowIncrement = Integer.parseInt(split[0]);
     int colIncrement = Integer.parseInt(split[1]);
     int r = row, c = column;
-    int matrixHeight = inputMatrix.length; //<>// //<>// //<>// //<>// //<>// //<>//
-    int [] sample = inputMatrix[0]; //<>// //<>// //<>// //<>// //<>// //<>//
+    int matrixHeight = inputMatrix.length; //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+    int [] sample = inputMatrix[0]; //<>// //<>// //<>// //<>// //<>// //<>// //<>//
     int matrixWidth = sample.length;
     ArrayList<Node> list = new ArrayList<Node>();
     Node first = constructNode(column, row);
@@ -257,7 +257,7 @@ public class Utils {
     r += rowIncrement;
     c += colIncrement;
     while (r >= 0 && r < matrixHeight && c >= 0 && c < matrixWidth) {
-      if (inputMatrix[r][c] == -1 && roadMatrix[r][c][dir] != 1) { //<>// //<>// //<>// //<>// //<>// //<>//
+      if (inputMatrix[r][c] == -1 && roadMatrix[r][c][dir] != 1) { //<>// //<>// //<>// //<>// //<>// //<>// //<>//
         roadMatrix[r][c][dir] = 1;
         Node thisNode = constructNode(c, r);
         list.add(thisNode);

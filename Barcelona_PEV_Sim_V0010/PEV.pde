@@ -138,20 +138,28 @@ class PEV {
         PVector roadStartPt = road.roadPts[0];
         //int i = 0;
         for (Road tmpRoad : roads.roads) {
-          PVector tmpRoadStartPt = tmpRoad.roadPts[0];
+          for (PVector roadPt: tmpRoad.roadPts) {
+            // Check if == start or end...
+            if (roadPt.x == roadEndPt.x && roadPt.y == roadEndPt.y) {
+              nextRoads.add(tmpRoad);
+            }
+          }
+          /*PVector tmpRoadStartPt = tmpRoad.roadPts[0];
           PVector tmpRoadEndPt = tmpRoad.roadPts[tmpRoad.ptNum-1];
           //println(tmpRoad.roadPts);
           //println("tmpRoad ["+i+"]: ");
           //println("PVector.dist(roadEndPt, tmpRoadStartPt) = "+PVector.dist(roadEndPt, tmpRoadStartPt));
           //println("PVector.dist(roadStartPt, tmpRoadEndPt) = "+PVector.dist(roadStartPt, tmpRoadEndPt));
+          //println("Distance to temp road start point " + tmpRoadStartPt + " from road end point " + roadEndPt + " is " + PVector.dist(roadEndPt, tmpRoadStartPt) + ".");
           if (PVector.dist(roadEndPt, tmpRoadStartPt) <= roadConnectionTolerance) {
             //println("pass if 01");
+            //println("Distance to temp road end point " + tmpRoadEndPt + " from road start point " + roadStartPt + " is " + PVector.dist(roadStartPt, tmpRoadEndPt) + ".");
             if (PVector.dist(roadStartPt, tmpRoadEndPt) > roadConnectionTolerance) {
               //println("pass if 02");
               nextRoads.add(tmpRoad);
             }
           }
-          //i ++;
+          //i ++;*/
         }
         //println("find: "+nextRoads.size());
         // pick one next road
