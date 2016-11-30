@@ -37,7 +37,19 @@ class PEVs {
     for (int i = 0; i < totalPEVNum; i ++) {
       int tmpRoadID = int(random(0.0, totalRoadNum-1)+0.5);
       Road tmpRoad = roads.roads.get(tmpRoadID);
-      float t = random(0.0, 0.75);
+      float r = random(0.0, 0.75);
+      float t = - 1.0;
+      float diff = 999999999.0;
+      for (float j = 0; j<= 1.0; j += 1.0/tmpRoad.roadPts.length){
+        if (abs(j-t) < diff){
+          diff = abs(j-t);
+          t = j;
+        }  
+      }
+      
+      if (t == -1.0) {
+        t = 0.0;
+      }
       //PEV tmpPEV = new PEV(currentPEVID, tmpRoadID, t);
       PEV tmpPEV = new PEV(tmpRoad, t, i);
       PEVs.add(tmpPEV);

@@ -64,13 +64,13 @@ Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 500; // 1 day in minutes - 20 minutes?
+int totalRunTime = 86400; // 1 day in minutes - 20 minutes?
 
 float simSpeed = 60; // (seconds/frame)
 
 // TO DO - Create configurable input format...
 
-LogStatus logStatus = LogStatus.DetailedPrint;
+LogStatus logStatus = LogStatus.NoPrint;
 
 void setup() {
 
@@ -83,10 +83,10 @@ void setup() {
   CityGenerator c = new CityGenerator();
 
   CityOutput city = c.run();
- //<>//
+
   int[][] matrix = u.fillMatrix("matrix2.txt");
 
-  //CityOutput city = u.parseInputMatrix(matrix); //<>// //<>// //<>// //<>//
+  //CityOutput city = u.parseInputMatrix(matrix); //<>// //<>// //<>//
 
   roads = city.roads; //<>// //<>// //<>// //<>//
   allBuildings = city.buildings; //<>//
@@ -152,7 +152,7 @@ void setup() {
 }
 
 void draw() {
-  time += 1;
+  time += simSpeed;
 
   if ((logStatus == LogStatus.PEVPrint || logStatus == LogStatus.DetailedPrint)) { // && time % 10 == 0 Only execute every 10 timesteps
     log.logPEVLocations(PEVs.PEVs, time);
@@ -168,6 +168,12 @@ void draw() {
   }
 
   if (makeJobs) {
+    
+    // UDGAM
+    
+    // Call getJobCount -> j
+    
+    // Add j jobs to the queue, then continue as normal
 
     float currentProb = prob.getValue(time);
     float randomJobProb = random(1);

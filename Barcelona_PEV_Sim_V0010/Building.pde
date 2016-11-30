@@ -22,14 +22,3 @@ class Building {
   
   
 }
-
-//Methods
-
-//jobProbability() = returns a float with the relative probability of a job spawning from this Building in comparison to other Buildings on the grid [KEVIN]
-//getJobForBuilding() = returns a Job from this building, randomly assigning the pickup location to be at the building [UDGAM]
-//Parameters
-
-//nearestRoads = ArrayList<Road>, represents the nearest Roads to the Building that me will reference during the simulation
-//density = float, represents population living in that building, determined from the parser
-//probability = float, determined from jobProbability() method
-//xPos, yPos = float, coordinates of Building on the input matrix, starting at index [0, 0] in top left

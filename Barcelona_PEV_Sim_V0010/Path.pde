@@ -95,6 +95,7 @@ class Path {
         }
       }
       println("No path found");
+      println(parentArray + "sfasfsdfsadfs");
       println(startPt + " " + destinationPt);
       return null;
     }
@@ -118,11 +119,13 @@ class Path {
       }
     }
     
+    // UDGAM - Look at parentArray = null case
+    
     finalPath.add(beginning);
     if (current == null || beginning == null) {
       return null;
     } else {
-      println("Parent Array: " + parentArray);
+      //println("Parent Array: " + parentArray);
       while (parentArray[current.id] != beginningID) {
         int parentid = parentArray[current.id];
         //println(parentid);
