@@ -174,6 +174,10 @@ void draw() {
     // Call getJobCount -> j
     
     // Add j jobs to the queue, then continue as normal
+    
+    int jobCount = prob.getJobCount(time, simSpeed);
+    
+    println("JOB COUNT FOR TIME " + time + " = " + jobCount);
 
     float currentProb = prob.getValue(time);
     float randomJobProb = random(1);
