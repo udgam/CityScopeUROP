@@ -51,21 +51,25 @@ class Path {
     Node beginning = null;
     Node end = null;
     // Finding the beginning node id
+    println ("START PT IS " +startPt);
+    println("END PT IS" + goalPt);
     for (Node node : nodes.allNodes) {
-      if (node.point == startPt) {
+      if (node.point.x == startPt.x && node.point.y == startPt.y) {
         beginning = node;
         beginningID = node.id;
       }
-      if (node.point == goalPt) {
+    
+      if (node.point.x == goalPt.x && node.point.y == startPt.y) {
         end = node;
         endID = node.id;
       }
     }
+    println("END");
 
     PVector destinationPt = goalPt;
     Node parent = null;
     if (beginning == null) {
-      println("Beginning node not found in all nodes");
+      println("Beginning node"+ startPt +" not found in all nodes");
       return null;
     } else {
       agenda.add(beginning);
@@ -80,7 +84,7 @@ class Path {
         //parent of a child = parent
 
         for (Node next : specificSuccessorNodes ) {
-          if (next.point == destinationPt) {
+          if (next.point.x == destinationPt.x && next.point.y == destinationPt.y) {
             println("Path found");
             pathPresent = true;
             parentArray[next.id] = parent.id;
@@ -95,7 +99,6 @@ class Path {
         }
       }
       println("No path found");
-      println(parentArray + "sfasfsdfsadfs");
       println(startPt + " " + destinationPt);
       return null;
     }
@@ -144,6 +147,10 @@ class Path {
         inOrderPath.add(destination);
       }
       pathOfNodes = inOrderPath;
+      for (Node node: pathOfNodes){
+        print(node.point+ " ");
+      }
+      println("");
       return pathOfNodes;
     }
   }

@@ -177,21 +177,25 @@ void draw() {
     
     int jobCount = prob.getJobCount(time, simSpeed);
     
+    if (jobCount > 0){
     println("JOB COUNT FOR TIME " + time + " = " + jobCount);
-
-    float currentProb = prob.getValue(time);
-    float randomJobProb = random(1);
-    if (randomJobProb <= currentProb) {
-      jobPresent = true;
-    } else {
-      jobPresent = false;
     }
-    // Getting a PEV to "pick up package"
+    
+    for(int j = 0; j<=jobCount; j++){
+    
+    //float currentProb = prob.getValue(time);
+    //float randomJobProb = random(1);
+    //if (randomJobProb <= currentProb) {
+    //  jobPresent = true;
+    //} else {
+    //  jobPresent = false;
+    //}
+    //// Getting a PEV to "pick up package"
 
 
 
-    //If the job is found
-    if (jobPresent) {
+    ////If the job is found
+    //if (jobPresent) {
 
       // Finding random pickup Building and dropOff Building
       int pickupBuildingRand = int(random(totalDensity));
@@ -209,7 +213,12 @@ void draw() {
           dropOffBuilding = building;
         }
       }
-
+      if (pickupBuilding == null){
+        println("Pickup Building is null");
+      }
+      if (dropOffBuilding == null){
+        println("Dropoff Building is null");
+      }
       Job newJob = new Job(time, pickupBuilding.nearestPt, dropOffBuilding.nearestPt);
       jobSchedule.add(newJob);
 
@@ -255,6 +264,7 @@ void draw() {
           destinationsIndex +=1;
         }
       }
+    }
       for (int i = 0; i <= jobSchedule.size() - 1; i++) {
         if (jobSchedule.get(i).jobCreated >= time - waitTime &&  jobSchedule.get(i).jobState == "notStarted") {
           if (PEVs.findNearestPEV(jobSchedule.get(i).pickupLocation) >= 0) {
@@ -312,7 +322,6 @@ void draw() {
           //  paths.add(fake);
         }
       }
-    }
   }
 
   //Checking PEV Status, seeing if any PEVS have recently completed jobs

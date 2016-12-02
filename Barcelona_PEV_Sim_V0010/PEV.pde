@@ -58,7 +58,7 @@ class PEV {
     //  move3();
     //}
     if (action == "wandering") {
-      //getRotation();
+      getRotation();
     } else if (action == "inRoute") {
       getRotation2();
     } else if (action == "delivering") {
