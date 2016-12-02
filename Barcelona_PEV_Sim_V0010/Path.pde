@@ -116,7 +116,7 @@ class Path {
         current = node;
         destination = node;
       }
-      if (node.point == startPt) {
+      if (node.point.x == startPt.x && node.point.y == startPt.y) {
         beginning = node;
         node.activity += 1;
       }
