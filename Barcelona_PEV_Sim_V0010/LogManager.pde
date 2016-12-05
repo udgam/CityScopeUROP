@@ -56,7 +56,6 @@ class LogManager {
     for (String s : l) {
       logEvent(s);
     }
-    logEvent("\n");
   }
   
 }

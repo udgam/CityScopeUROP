@@ -51,8 +51,8 @@ class Path {
     Node beginning = null;
     Node end = null;
     // Finding the beginning node id
-    println ("START PT IS " +startPt);
-    println("END PT IS" + goalPt);
+    //println ("START PT IS " +startPt);
+    //println("END PT IS" + goalPt);
     for (Node node : nodes.allNodes) {
       if (node.point.x == startPt.x && node.point.y == startPt.y) {
         beginning = node;
@@ -64,7 +64,7 @@ class Path {
         endID = node.id;
       }
     }
-    println("END");
+    //println("END");
 
     PVector destinationPt = goalPt;
     Node parent = null;

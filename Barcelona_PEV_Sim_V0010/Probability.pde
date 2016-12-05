@@ -25,8 +25,6 @@ class Probability {
     
     float val = getValue(time);
     
-    println(val + " " + rand);
-    
     if (rand <= val) {
       return min(1, Math.round(rand*simSpeed));
     } else return 0;

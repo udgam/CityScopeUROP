@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 10;
+int totalPEVNum = 30;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -56,19 +56,16 @@ Probability prob = new Probability();
 int totalDensity = 0;
 int totalJobs = 0;
 boolean drawOnce = true;
-//Implement “endurance” waiting queue that will allow a job to wait for some random time (10-15 minutes) before being labeled as missed.
 
-int waitTime = 15; // maxWaitTime
+int waitTime = 60*60; // maxWaitTime, minutes * 60
 
 Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 86400; // 1 day in minutes - 20 minutes?
+int totalRunTime = 60*60*24;
 
 float simSpeed = 60; // (seconds/frame)
-
-// TO DO - Create configurable input format...
 
 LogStatus logStatus = LogStatus.NoPrint;
 
@@ -84,7 +81,7 @@ void setup() {
 
   CityOutput city = c.run();
 
-  int[][] matrix = u.fillMatrix("matrix2.txt");
+  //int[][] matrix = u.fillMatrix("matrix2.txt");
 
   //CityOutput city = u.parseInputMatrix(matrix); //<>// //<>// //<>//
 
@@ -110,22 +107,7 @@ void setup() {
 
   smooth(8); //2,3,4, or 8
 
-  img_BG = loadImage("BG_ALL_75DPI.png");
- //<>//
-  //}
-  // add roads //<>//
-  //roadPtFile = "RD_160420.txt"; //<>//
-  //roads = new Roads();
-  //roads.addRoadsByRoadPtFile(roadPtFile); //<>// //<>// //<>// //<>// //<>// //<>//
-  //smallerSampleRoads = new Roads();
-  //smallerSampleRoads.roads.add(roads.roads.get(0));
-  //smallerSampleRoads.roads.add(roads.roads.get(1)); //<>// //<>// //<>// //<>// //<>//
-  //roadPtFile = "RD_160420.txt";
-  //roads = new Roads();
-  //roads.addRoadsByRoadPtFile(roadPtFile);
-  //smallerSampleRoads = new Roads();
-  //smallerSampleRoads.roads.add(roads.roads.get(0));
-  //smallerSampleRoads.roads.add(roads.roads.get(1));
+  img_BG = loadImage("BG_ALL_75DPI.png"); //<>// //<>// //<>// //<>// //<>//
 
   // add PEVs
   PEVs = new PEVs();
@@ -148,7 +130,8 @@ void setup() {
   PEVs.addPEV(miss);
 
   log.logEvent("Simulation initialized with " + totalPEVNum + " available PEVs.");
-  log.logEvent("Using LogStatus type of " + logStatus.toString() + ".");
+  log.logEvent("Using LogStatus type of " + logStatus.toString() + ".\n");
+  log.logMatrix(city.matrix, city.matrix[0].length);
 }
 
 void draw() {
@@ -178,7 +161,7 @@ void draw() {
     int jobCount = prob.getJobCount(time, simSpeed);
     
     if (jobCount > 0){
-    println("JOB COUNT FOR TIME " + time + " = " + jobCount);
+    //println("JOB COUNT FOR TIME " + time + " = " + jobCount);
     }
     
     for(int j = 0; j<=jobCount; j++){
@@ -216,52 +199,54 @@ void draw() {
       if (pickupBuilding == null){
         println("Pickup Building is null");
       }
-      if (dropOffBuilding == null){
+      else if (dropOffBuilding == null){
         println("Dropoff Building is null");
-      }
-      Job newJob = new Job(time, pickupBuilding.nearestPt, dropOffBuilding.nearestPt);
-      jobSchedule.add(newJob);
-
-      //println("CHECKING VALUES");
-      //println(totalDensity);
-      //println(pickupBuildingRand);
-      //println(dropOffBuildingRand);
-      //println(pickupBuilding.position);
-      //println(pickupBuilding.density);
-      //println(pickupBuilding.nearestPt);
-      //println(dropOffBuilding.position);
-
-      PVector pickupLocation = pickupBuilding.nearestPt;
-      PVector dropOffLocation = dropOffBuilding.nearestPt;
-      println("pickup Location:" + pickupLocation);
-      println("dropoff Location:" +dropOffLocation);
-      Spots.initiate(2);
-      for (int i = 0; i<=1; i++) {
-        Spot s = Spots.Spots.get(Spots.Spots.size()-(2-i));
-        //println(s.locationPt);
-        //Add Pickup Spot
-        if (i == 0) {
-
-          s.locationPt = pickupLocation;
-          s.road = pickupBuilding.nearestRoad;
-          s.status = 0;
-          s.t = roads.findTWithLocation(s.locationPt);
-          pickups.addSpot(s);
-          pickupsToSpots[pickupsIndex] = totalSpots;
-          totalSpots += 1;
-          pickupsIndex +=1;
-        }
-        //Add Delivery Spot
-        if (i == 1) {
-
-          s.locationPt = dropOffLocation;
-          s.road = dropOffBuilding.nearestRoad;
-          s.status = 1;
-          s.t = roads.findTWithLocation(s.locationPt);
-          destinations.addSpot(s);
-          destinationsToSpots[destinationsIndex] = totalSpots;
-          totalSpots += 1;
-          destinationsIndex +=1;
+      } else {
+        Job newJob = new Job(time, pickupBuilding.nearestPt, dropOffBuilding.nearestPt);
+        jobSchedule.add(newJob);
+        
+  
+        //println("CHECKING VALUES");
+        //println(totalDensity);
+        //println(pickupBuildingRand);
+        //println(dropOffBuildingRand);
+        //println(pickupBuilding.position);
+        //println(pickupBuilding.density);
+        //println(pickupBuilding.nearestPt);
+        //println(dropOffBuilding.position);
+  
+        PVector pickupLocation = pickupBuilding.nearestPt;
+        PVector dropOffLocation = dropOffBuilding.nearestPt;
+        //println("pickup Location:" + pickupLocation);
+        //println("dropoff Location:" +dropOffLocation);
+        Spots.initiate(2);
+        for (int i = 0; i<=1; i++) {
+          Spot s = Spots.Spots.get(Spots.Spots.size()-(2-i));
+          //println(s.locationPt);
+          //Add Pickup Spot
+          if (i == 0) {
+  
+            s.locationPt = pickupLocation;
+            s.road = pickupBuilding.nearestRoad;
+            s.status = 0;
+            s.t = roads.findTWithLocation(s.locationPt);
+            pickups.addSpot(s);
+            pickupsToSpots[pickupsIndex] = totalSpots;
+            totalSpots += 1;
+            pickupsIndex +=1;
+          }
+          //Add Delivery Spot
+          if (i == 1) {
+  
+            s.locationPt = dropOffLocation;
+            s.road = dropOffBuilding.nearestRoad;
+            s.status = 1;
+            s.t = roads.findTWithLocation(s.locationPt);
+            destinations.addSpot(s);
+            destinationsToSpots[destinationsIndex] = totalSpots;
+            totalSpots += 1;
+            destinationsIndex +=1;
+          }
         }
       }
     }
@@ -329,6 +314,7 @@ void draw() {
     int s = 0;
     int count  = 0;
     for (int job : currentPEVs) {
+      try {
       if (PEVs.PEVs.get(job).action == "wandering") {
         if (s < Spots.Spots.size() && Spots.Spots.get(s).drawn) {
           Spots.Spots.get(s).drawn = false;
@@ -348,6 +334,8 @@ void draw() {
         }
         count += 1;
         s = s + 2;
+      } } catch (Exception e) {
+        // UDGAM - Take a look at this out of bounds error???
       }
     }
   }
@@ -437,7 +425,10 @@ void draw() {
   
   if (time >= totalRunTime) {
     makeJobs = false;
-    if (jobSchedule.size() == deliveredCount + missingCount) {
+    
+    println(jobSchedule.size() + " " + deliveredCount + " " + missingCount);
+    
+    if (jobSchedule.size() == deliveredCount + missingCount || time > totalRunTime + 5 * waitTime) {
 
       if (drawOnce) {
         println("FINISHED");
@@ -459,7 +450,7 @@ void draw() {
         drawOnce = false;
       }
       
-      log.logEvent("\nSimulation complete after total time of " + totalRunTime + " minutes.");
+      log.logEvent("\nSimulation complete after total time of " + totalRunTime + " seconds.");
       log.logEvent("\n---------- Job Summary ----------");
       // TO DOs
       log.logEvent("\nMissed Job Count = " + missingCount + " jobs.");
@@ -467,6 +458,7 @@ void draw() {
       float percent = ((float)deliveredCount / (float)jobSchedule.size()) * 100.0;
       log.logEvent("\nJob Completion Percentage = " + deliveredCount + "/" + jobSchedule.size() + " = " + percent + "%.");
       log.close();
+      println("Here!!!");
       //exit();
     }
   }
