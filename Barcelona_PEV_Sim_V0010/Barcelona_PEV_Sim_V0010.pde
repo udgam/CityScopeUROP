@@ -63,9 +63,9 @@ Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 60*60*24;
+int totalRunTime = 15000;
 
-float simSpeed = 60; // (seconds/frame)
+float simSpeed = 13; // (seconds/frame)
 
 LogStatus logStatus = LogStatus.NoPrint;
 
@@ -152,17 +152,11 @@ void draw() {
 
   if (makeJobs) {
     
-    // UDGAM
-    
-    // Call getJobCount -> j
+
     
     // Add j jobs to the queue, then continue as normal
     
     int jobCount = prob.getJobCount(time, simSpeed);
-    
-    if (jobCount > 0){
-    //println("JOB COUNT FOR TIME " + time + " = " + jobCount);
-    }
     
     for(int j = 0; j<=jobCount; j++){
     
@@ -250,64 +244,53 @@ void draw() {
         }
       }
     }
+    }
+    
       for (int i = 0; i <= jobSchedule.size() - 1; i++) {
-        if (jobSchedule.get(i).jobCreated >= time - waitTime &&  jobSchedule.get(i).jobState == "notStarted") {
-          if (PEVs.findNearestPEV(jobSchedule.get(i).pickupLocation) >= 0) {
-            Job current = jobSchedule.get(i);
-            jobSchedule.get(i).startTime = time;
-            jobSchedule.get(i).jobState = "inProgress";
-            println("Empty PEV Found");
-            currentPEVs.add(PEVs.findNearestPEV(current.pickupLocation));
-            PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).action = "inRoute";
-            PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).inRouteTime = time;
-            jobSchedule.get(i).pev = PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1));
-            int [] p = path.findPath(PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).locationPt, current.pickupLocation, nodes);
-            PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).inRoutePath.pathOfNodes = path.pathFromParentArray(p, PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).locationPt, current.pickupLocation);
-            //print("Path from PEV to pickup");
-            //println(PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).inRoutePath.pathOfNodes);
-            // Moving from start to finish path
-
-            int [] p2 = path.findPath(current.pickupLocation, current.dropOffLocation, nodes);
-            ArrayList <Node> t = path.pathFromParentArray(p2, current.pickupLocation, current.dropOffLocation);
-            PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).deliveringPath.pathOfNodes = t;
-            //for(Node node: t){
-            //  print(node.point);
-            //}
-            //println("Path from pickup to dropOff");
-            //println(PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).deliveringPath.pathOfNodes);
-            Path temp = new Path(nodes);
-            temp.pathOfNodes = PEVs.PEVs.get(currentPEVs.get(currentJob-1)).deliveringPath.pathOfNodes;
-            temp.drawn = true;
-            paths.add(temp);
-            currentJob += 1;
-            presenceOfPath = true; //<>// //<>// //<>// //<>// //<>//
-          } else {
-            jobSchedule.get(i).jobState = "missed"; //<>//
-            missingCount += 1;
-          }
-        } else {
-
-          //THIS IS CALLED WHEN NO WANDERING PEV IS FOUND
-
-          //missingCount+=1;
-
-          //  println("Missed Job#:" + currentJob);
-
-          //  // KEVIN - MISSED
-
-          //  currentJob+=1;
-
-          //  // Using null PEV
-
-          //  currentPEVs.add(PEVs.PEVs.size() - 1);
-          //  Path fake = new Path(nodes);
-          //  PVector r = new PVector(0.0, 0.0, 0.0);
-          //  Node s = new Node(r);
-          //  fake.pathOfNodes.add(s);
-          //  paths.add(fake);
+        if (jobSchedule.get(i).jobCreated < time - waitTime){
+            if (jobSchedule.get(i).jobState == "notStarted"){
+              missingCount += 1;
+            }
+            jobSchedule.get(i).jobState = "missed";   
         }
+        
+        else{
+          if (jobSchedule.get(i).jobState == "notStarted") {
+            if (PEVs.findNearestPEV(jobSchedule.get(i).pickupLocation) >= 0) {
+              Job current = jobSchedule.get(i);
+              jobSchedule.get(i).startTime = time;
+              jobSchedule.get(i).jobState = "inProgress";
+              println("Empty PEV Found");
+              currentPEVs.add(PEVs.findNearestPEV(current.pickupLocation));
+              PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).action = "inRoute";
+              PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).inRouteTime = time;
+              jobSchedule.get(i).pev = PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1));
+              int [] p = path.findPath(PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).locationPt, current.pickupLocation, nodes);
+              PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).inRoutePath.pathOfNodes = path.pathFromParentArray(p, PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).locationPt, current.pickupLocation);
+              //print("Path from PEV to pickup");
+              //println(PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).inRoutePath.pathOfNodes);
+              // Moving from start to finish path
+  
+              int [] p2 = path.findPath(current.pickupLocation, current.dropOffLocation, nodes);
+              ArrayList <Node> t = path.pathFromParentArray(p2, current.pickupLocation, current.dropOffLocation);
+              PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).deliveringPath.pathOfNodes = t;
+              //for(Node node: t){
+              //  print(node.point);
+              //}
+              //println("Path from pickup to dropOff");
+              //println(PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).deliveringPath.pathOfNodes);
+              Path temp = new Path(nodes);
+              temp.pathOfNodes = PEVs.PEVs.get(currentPEVs.get(currentJob-1)).deliveringPath.pathOfNodes;
+              temp.drawn = true;
+              paths.add(temp);
+              currentJob += 1;
+              presenceOfPath = true; //<>// //<>// //<>// //<>// //<>//
+            } //<>//
+          }
+        }
+        
       }
-  }
+  
 
   //Checking PEV Status, seeing if any PEVS have recently completed jobs
   if (currentPEVs.size() > 0) {
