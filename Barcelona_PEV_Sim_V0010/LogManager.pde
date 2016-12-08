@@ -48,13 +48,14 @@ class LogManager {
     for (int i = 0; i < size; i++) {
       String current = "";
       for (int j = 0; j < size; j++) {
-        current += matrix[i][j] + "\t";
+        current += matrix[i][j] + ",\t";
       }
       l.add(current);
     }
-    logEvent("Current city configuration (" + size + " x " + size + ").");
+    logEvent("Current city configuration (" + size + " x " + size + ").\n");
     for (String s : l) {
       logEvent(s);
+      println(s);
     }
   }
   

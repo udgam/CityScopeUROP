@@ -36,6 +36,6 @@ class Nodes {
       }
     }
     
-    println("NODE COUNT: " + count);
+    //println("NODE COUNT: " + count);
   }
 }

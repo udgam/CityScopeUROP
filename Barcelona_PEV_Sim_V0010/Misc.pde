@@ -31,7 +31,14 @@ public class Utils {
       for (int column = 0; column < matrixWidth; column++) {
         int cell = matrix[row][column];
         if (cell != -1) {
-          Building b = constructBuilding(cell, column, row);
+          int density = 0;
+          if (cell != 0)
+            density = cell;
+          else {
+            density = (int)random(maxDensity);
+            matrix[row][column] = density;
+          }
+          Building b = constructBuilding(density, column, row);
           buildings.add(b);
         } else if (roadMatrix[row][column][0] == 0 && roadMatrix[row][column][1] == 0 && roadMatrix[row][column][2] == 0 && roadMatrix[row][column][3] == 0) {
           // We have a Road cell. We must determine where this should go and construct Roads accordingly.
@@ -59,30 +66,7 @@ public class Utils {
     Roads roads = new Roads();
     roads.addRoadsByRoadPtFile("roads.txt");
     roads = removeIsolatedRoads(roads, matrix, matrixWidth, matrixHeight);
-    return formMatrix(roads, buildings, matrixWidth, matrixHeight);
-  }
-  
-  CityOutput formMatrix(Roads roads, ArrayList<Building> buildings, int w, int h) {
-    int[][] matrix = new int[h][w];
-    CityOutput city;
-    for (Road r : roads.roads) {
-      for (PVector p : r.roadPts) {
-        matrix[(int)p.y][(int)p.x] = -1;
-      }
-    }
-    for (int i = 0; i < h; i++) {
-      for (int j = 0; j < w; j++) {
-        if (matrix[i][j] == 0) {
-          // Need to add a building here.
-          int randomDensity = (int)random(maxDensity);
-          Building b = constructBuilding(randomDensity, j, i);
-          buildings.add(b);
-          matrix[i][j] = randomDensity;
-        }
-      }
-    }
-    city = new CityOutput(roads, buildings, true, matrix);
-    return city;
+    return new CityOutput(roads, buildings, true, matrix);
   }
   
   Roads removeDeadEnds(Roads roads, int[][] matrix, int w, int h) {

@@ -3,6 +3,8 @@ class Probability {
   int maximumJobCount = 10;
   
   float[] values;
+  
+  float maxVal;
 
   void init(String fileName) {
     String[] rows = loadStrings(fileName);
@@ -10,6 +12,7 @@ class Probability {
     for (int i = 0; i < rows.length; i++) {
       values[i] = Float.parseFloat(rows[i])*maximumJobCount/60;
     }
+    maxVal = max(values);
   }
   
   float getValue(int time) { // time in seconds
@@ -21,12 +24,12 @@ class Probability {
   
   int getJobCount(int time, float simSpeed) {
   
-    float rand = random(0, 1);
+    float rand = random(0, maxVal);
     
     float val = getValue(time);
     
     if (rand <= val) {
-      return min(1, Math.round(rand*simSpeed));
+      return max(1, Math.round(rand*simSpeed));
     } else return 0;
     
   }

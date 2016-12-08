@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 30;
+int totalPEVNum = 15;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -57,13 +57,13 @@ int totalDensity = 0;
 int totalJobs = 0;
 boolean drawOnce = true;
 
-int waitTime = 60*60; // maxWaitTime, minutes * 60
+int waitTime = 30*60; // maxWaitTime, minutes * 60
 
 Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 15000;
+int totalRunTime = 60*60*24/2;
 
 float simSpeed = 13; // (seconds/frame)
 
@@ -75,63 +75,63 @@ void setup() {
 
   prob.init("demand.txt");
 
-  Utils u = new Utils();
-
   CityGenerator c = new CityGenerator();
 
-  CityOutput city = c.run();
+  //CityOutput city = c.run();
+  
+  Utils u = new Utils();
 
-  //int[][] matrix = u.fillMatrix("matrix2.txt");
+  int[][] matrix = u.fillMatrix("matrix_custom.txt");
 
-  //CityOutput city = u.parseInputMatrix(matrix); //<>// //<>// //<>//
+  CityOutput city = u.parseInputMatrix(matrix); //<>// //<>//
 
-  roads = city.roads; //<>// //<>// //<>// //<>//
-  allBuildings = city.buildings; //<>//
+  roads = city.roads; //<>// //<>// //<>//
+  allBuildings = city.buildings;
 
   for (Building building : allBuildings) {
     building.nearestRoad = roads.findRoadWithLocation(building.position);
     building.nearestPt = roads.findPVectorWithLocation(building.position);
     totalDensity += int(building.density);
-  } //<>//
+  }
 
-  frameRate(9999); //<>//
+  frameRate(9999);
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
-  screenScale = width / 1920.0; //fit everything with screen size //<>//
-  scale(screenScale); //<>// //<>// //<>// //<>// //<>//
-  println("width = "+width); //<>//
+  screenScale = width / 1920.0; //fit everything with screen size
+  scale(screenScale); //<>// //<>// //<>// //<>//
+  println("width = "+width);
   println("screenScale = "+screenScale);
   //if (drawEverything){
-  pg = createGraphics(1920, 1920); //<>// //<>// //<>// //<>// //<>//
+  pg = createGraphics(1920, 1920); //<>// //<>// //<>// //<>//
 
   setupScrollbars();
 
   smooth(8); //2,3,4, or 8
 
-  img_BG = loadImage("BG_ALL_75DPI.png"); //<>// //<>// //<>// //<>// //<>//
+  img_BG = loadImage("BG_ALL_75DPI.png"); //<>// //<>// //<>// //<>//
 
   // add PEVs
   PEVs = new PEVs();
   PEVs.initiate(totalPEVNum);
 
   //add od data
-  //String d = "OD_160502_439trips_noRepeat_noIntersections.csv"; //<>//
+  //String d = "OD_160502_439trips_noRepeat_noIntersections.csv";
   //String withRepeats = "OD_160503_1000trips_withRepeat_noIntersections.csv";
-  jobSchedule = new ArrayList<Job>(); //<>//
-  //add Pickup Spots //<>//
-  Spots = new Spots(); //<>// //<>// //<>// //<>// //<>// //<>//
-  paths = new ArrayList<Path>(); //<>//
-  pickups = new Spots(); //<>//
-  destinations = new Spots(); //<>// //<>// //<>// //<>// //<>//
-  nodes.addNodesToAllNodes(roads); //<>//
+  jobSchedule = new ArrayList<Job>();
+  //add Pickup Spots
+  Spots = new Spots(); //<>// //<>// //<>// //<>// //<>//
+  paths = new ArrayList<Path>();
+  pickups = new Spots();
+  destinations = new Spots(); //<>// //<>// //<>// //<>//
+  nodes.addNodesToAllNodes(roads);
   path = new Path(nodes);
-  //Missing PEV Construction //<>// //<>// //<>// //<>// //<>//
+  //Missing PEV Construction //<>// //<>// //<>// //<>//
   PEV miss = new PEV(roads.roads.get(0), 0.0, -1);
   miss.drawn = false;
   PEVs.addPEV(miss);
 
   log.logEvent("Simulation initialized with " + totalPEVNum + " available PEVs.");
   log.logEvent("Using LogStatus type of " + logStatus.toString() + ".\n");
-  log.logMatrix(city.matrix, city.matrix[0].length);
+  //log.logMatrix(city.matrix, city.matrix[0].length);
 }
 
 void draw() {
@@ -139,40 +139,24 @@ void draw() {
 
   if ((logStatus == LogStatus.PEVPrint || logStatus == LogStatus.DetailedPrint)) { // && time % 10 == 0 Only execute every 10 timesteps
     log.logPEVLocations(PEVs.PEVs, time);
-  } //<>//
+  }
 
-  if (! drawEverything && ! nothingDrawn) { //<>//
+  if (! drawEverything && ! nothingDrawn) {
     for (PEV pev : PEVs.PEVs) {
-      pev.drawn = false; //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+      pev.drawn = false; //<>// //<>// //<>// //<>// //<>// //<>//
       pev.inRoutePath.drawn = false;
-      pev.deliveringPath.drawn = false; //<>//
+      pev.deliveringPath.drawn = false;
       nothingDrawn = true;
-    } //<>// //<>// //<>// //<>// //<>//
+    } //<>// //<>// //<>// //<>//
   }
 
   if (makeJobs) {
-    
-
     
     // Add j jobs to the queue, then continue as normal
     
     int jobCount = prob.getJobCount(time, simSpeed);
     
-    for(int j = 0; j<=jobCount; j++){
-    
-    //float currentProb = prob.getValue(time);
-    //float randomJobProb = random(1);
-    //if (randomJobProb <= currentProb) {
-    //  jobPresent = true;
-    //} else {
-    //  jobPresent = false;
-    //}
-    //// Getting a PEV to "pick up package"
-
-
-
-    ////If the job is found
-    //if (jobPresent) {
+    for(int j = 0; j<jobCount; j++){
 
       // Finding random pickup Building and dropOff Building
       int pickupBuildingRand = int(random(totalDensity));
@@ -244,8 +228,13 @@ void draw() {
         }
       }
     }
-    }
     
+    //println("Current queue size = " + jobSchedule.size() + ". Time = " + time + ". Jobs added = " + jobCount + ".");
+    
+    println(time);
+    
+    }
+      
       for (int i = 0; i <= jobSchedule.size() - 1; i++) {
         if (jobSchedule.get(i).jobCreated < time - waitTime){
             if (jobSchedule.get(i).jobState == "notStarted"){
@@ -254,13 +243,13 @@ void draw() {
             jobSchedule.get(i).jobState = "missed";   
         }
         
-        else{
+        else {
           if (jobSchedule.get(i).jobState == "notStarted") {
             if (PEVs.findNearestPEV(jobSchedule.get(i).pickupLocation) >= 0) {
               Job current = jobSchedule.get(i);
               jobSchedule.get(i).startTime = time;
               jobSchedule.get(i).jobState = "inProgress";
-              println("Empty PEV Found");
+              //println("Empty PEV Found");
               currentPEVs.add(PEVs.findNearestPEV(current.pickupLocation));
               PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).action = "inRoute";
               PEVs.PEVs.get(currentPEVs.get(currentPEVs.size() - 1)).inRouteTime = time;
@@ -284,8 +273,8 @@ void draw() {
               temp.drawn = true;
               paths.add(temp);
               currentJob += 1;
-              presenceOfPath = true; //<>// //<>// //<>// //<>// //<>//
-            } //<>//
+              presenceOfPath = true; //<>// //<>// //<>// //<>//
+            }
           }
         }
         
@@ -408,8 +397,13 @@ void draw() {
   
   if (time >= totalRunTime) {
     makeJobs = false;
+    println("---------");
     
-    println(jobSchedule.size() + " " + deliveredCount + " " + missingCount);
+    //for (int i = 0; i <= jobSchedule.size() - 1; i++) {
+    //    println(jobSchedule.get(i).jobState);
+    //  }
+    
+    //println(jobSchedule.size() + " " + deliveredCount + " " + missingCount);
     
     if (jobSchedule.size() == deliveredCount + missingCount || time > totalRunTime + 5 * waitTime) {
 
@@ -428,7 +422,7 @@ void draw() {
         for (Node node : nodes.allNodes) {
           stroke(float(265 - node.activity*100),265 - float(node.activity*10),265 - float(node.activity*10));
           point(factor*node.point.x + start, factor*node.point.y + start);
-          println("Node at "+node.point+" has activity of "+node.activity );
+          //println("Node at "+node.point+" has activity of "+node.activity );
         }
         drawOnce = false;
       }
@@ -438,10 +432,11 @@ void draw() {
       // TO DOs
       log.logEvent("\nMissed Job Count = " + missingCount + " jobs.");
       log.logEvent("\nDelivered Job Count = " + deliveredCount + " jobs.");
-      float percent = ((float)deliveredCount / (float)jobSchedule.size()) * 100.0;
-      log.logEvent("\nJob Completion Percentage = " + deliveredCount + "/" + jobSchedule.size() + " = " + percent + "%.");
+      float percent2 = ((float)deliveredCount / (float)jobSchedule.size()) * 100.0;
+      log.logEvent("\nJob Completion Percentage = " + deliveredCount + "/" + jobSchedule.size() + " = " + percent2 + "%.");
+      log.logEvent("\nSimulation complete in " + millis()/1000 + " seconds.");
       log.close();
-      println("Here!!!");
+      println("Here!!! Okay to exit now.");
       //exit();
     }
   }

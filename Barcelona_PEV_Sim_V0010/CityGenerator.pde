@@ -119,7 +119,7 @@ class CityGenerator {
         Boolean oneBelow = matrix[row + 1][col] == -1;
         return ! (oneAbove || oneBelow);
       } catch (Exception e) {
-        println(e);
+        //println(e);
         return true;
       }
     } else if (direction == down || direction == up) {

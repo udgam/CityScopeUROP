@@ -85,7 +85,7 @@ class Path {
 
         for (Node next : specificSuccessorNodes ) {
           if (next.point.x == destinationPt.x && next.point.y == destinationPt.y) {
-            println("Path found");
+            //println("Path found");
             pathPresent = true;
             parentArray[next.id] = parent.id;
             //println(parent.id);
@@ -148,9 +148,8 @@ class Path {
       }
       pathOfNodes = inOrderPath;
       for (Node node: pathOfNodes){
-        print(node.point+ " ");
+        //print(node.point+ " ");
       }
-      println("");
       return pathOfNodes;
     }
   }
