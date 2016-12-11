@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 15;
+int totalPEVNum = 10;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -57,7 +57,7 @@ int totalDensity = 0;
 int totalJobs = 0;
 boolean drawOnce = true;
 
-int waitTime = 30*60; // maxWaitTime, minutes * 60
+int waitTime = 15*60; // maxWaitTime, minutes * 60
 
 Boolean makeJobs = true;
 
