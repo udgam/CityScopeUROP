@@ -23,8 +23,8 @@ Roads roads = new Roads();
 Roads smallerSampleRoads;
 PEVs PEVs;
 Spots Spots;
-boolean drawRoads = false;
-boolean drawPath = false;
+boolean drawRoads = true;
+boolean drawPath = true;
 boolean drawTest = false;
 ArrayList <Path> paths;
 Path path;
@@ -48,7 +48,7 @@ ArrayList <Job> jobSchedule;
 ArrayList <PVector> test, test2;
 boolean add = true;
 PrintWriter logger;
-boolean drawEverything = false;
+boolean drawEverything = true;
 boolean nothingDrawn = false;
 ArrayList <Building> allBuildings;
 boolean jobPresent = false;
@@ -56,6 +56,9 @@ Probability prob = new Probability();
 int totalDensity = 0;
 int totalJobs = 0;
 boolean drawOnce = true;
+float constantFactor = 100.0;
+float starting = 100;
+
 
 int waitTime = 15*60; // maxWaitTime, minutes * 60
 
@@ -103,7 +106,7 @@ void setup() {
   //if (drawEverything){
   pg = createGraphics(1920, 1920); //<>// //<>// //<>// //<>//
 
-  setupScrollbars();
+  //setupScrollbars();
 
   smooth(8); //2,3,4, or 8
 
@@ -323,7 +326,7 @@ void draw() {
 
     imageMode(CORNER);
 
-    image(img_BG, 0, 0, 1920, 1920);
+    //image(img_BG, 0, 0, 1920, 1920);
   }
 
   // draw roads
@@ -360,7 +363,7 @@ void draw() {
     //println(frameRate);
 
     // draw scollbars
-    drawScrollbars();
+    //drawScrollbars();
   }
 
   targetPEVNum = int(ScrollbarRatioPEVNum*45+5); //5 to 50
@@ -418,6 +421,7 @@ void draw() {
         strokeWeight(10);
         float factor = 20;
         float start = 50;
+
         
         for (Node node : nodes.allNodes) {
           stroke(float(265 - node.activity*100),265 - float(node.activity*10),265 - float(node.activity*10));

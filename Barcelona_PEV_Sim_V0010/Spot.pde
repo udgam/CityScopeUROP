@@ -42,7 +42,7 @@ class Spot {
   void render() {
 
     pushMatrix();
-    translate(locationPt.x, locationPt.y);
+    translate(locationPt.x*constantFactor+starting, locationPt.y*constantFactor+starting);
     if (status==0) {
       fill(255, 240, 0);
     } else {

@@ -237,7 +237,7 @@ class PEV {
   void render() {
     if (drawn){
     pushMatrix();
-    translate(locationPt.x, locationPt.y);
+    translate(locationPt.x*constantFactor+starting, locationPt.y*constantFactor+starting);
     rotate(rotation);
 
     //// draw direction line

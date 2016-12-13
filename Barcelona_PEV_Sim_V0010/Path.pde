@@ -158,7 +158,7 @@ class Path {
     stroke(255, 0, 0); //cyan
     strokeWeight(1.0);
     for (int i = 0; i<=nodes.allNodes.size()-2; i++) {
-      line(nodes.allNodes.get(i).point.x, nodes.allNodes.get(i).point.y, nodes.allNodes.get(i+1).point.x, nodes.allNodes.get(i+1).point.y);
+      line(nodes.allNodes.get(i).point.x*constantFactor+starting, nodes.allNodes.get(i).point.y*constantFactor+starting, nodes.allNodes.get(i+1).point.x*constantFactor+starting, nodes.allNodes.get(i+1).point.y*constantFactor+starting);
     }
   }
 
@@ -167,7 +167,7 @@ class Path {
     strokeWeight(1.0);
     int total = path.size();
     for (int i = 0; i<= total-3; i++) {
-      line(path.get(i).point.x, path.get(i).point.y, path.get(i+1).point.x, path.get(i+1).point.y);
+      line(path.get(i).point.x*constantFactor+starting, path.get(i).point.y*constantFactor+starting, path.get(i+1).point.x*constantFactor+starting, path.get(i+1).point.y*constantFactor+starting);
     }
   }
 

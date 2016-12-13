@@ -104,7 +104,7 @@ class Road {
     for (int i = 0; i < ptNum - 1; i ++) {
       stroke(0, 255, 255); //cyan
       strokeWeight(1.0); 
-      line(roadPts[i].x, roadPts[i].y, roadPts[i+1].x, roadPts[i+1].y);
+      line(roadPts[i].x*constantFactor+starting, roadPts[i].y*constantFactor+starting, roadPts[i+1].x*constantFactor+starting, roadPts[i+1].y*constantFactor+starting);
     }
   }
 }//class Road

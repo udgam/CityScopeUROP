@@ -27,7 +27,7 @@ class Node {
 
   void drawNode(int act) {
     pushMatrix();
-    translate(point.x, point.y);
+    translate(point.x*constantFactor+starting, point.y*constantFactor+starting);
     if (act <= 10){
       fill(0,255,act * 25);
     }
