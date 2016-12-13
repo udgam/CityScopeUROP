@@ -1,4 +1,4 @@
-// Hamburg PEV Simulation v0010 //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+// Hamburg PEV Simulation v0010 //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
 // for MIT Media Lab, Changing Place Group, CityScope Project
 
 // by Yan Zhang (Ryan) <ryanz@mit.edu>
@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 10;
+int totalPEVNum = 50;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -60,13 +60,13 @@ float constantFactor = 100.0;
 float starting = 100;
 
 
-int waitTime = 15*60; // maxWaitTime, minutes * 60
+int waitTime = 20*60; // maxWaitTime, minutes * 60
 
 Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 60*60*24/2;
+int totalRunTime = 60*60*24;
 
 float simSpeed = 13; // (seconds/frame)
 
@@ -80,15 +80,13 @@ void setup() {
 
   CityGenerator c = new CityGenerator();
 
-  //CityOutput city = c.run();
-  
-  Utils u = new Utils();
+  CityOutput city = c.run();
 
-  int[][] matrix = u.fillMatrix("matrix_custom.txt");
+  int[][] matrix = c.fillMatrix("matrix_custom.txt");
 
-  CityOutput city = u.parseInputMatrix(matrix); //<>// //<>//
+  //CityOutput city = u.parseInputMatrix(matrix, true);
 
-  roads = city.roads; //<>// //<>// //<>//
+  roads = city.roads; //<>//
   allBuildings = city.buildings;
 
   for (Building building : allBuildings) {
@@ -100,17 +98,17 @@ void setup() {
   frameRate(9999);
   size(1024, 1024); //1920 x 1920: screenScale is about 1.5
   screenScale = width / 1920.0; //fit everything with screen size
-  scale(screenScale); //<>// //<>// //<>// //<>//
+  scale(screenScale); //<>// //<>//
   println("width = "+width);
   println("screenScale = "+screenScale);
   //if (drawEverything){
-  pg = createGraphics(1920, 1920); //<>// //<>// //<>// //<>//
+  pg = createGraphics(1920, 1920); //<>// //<>//
 
   //setupScrollbars();
 
   smooth(8); //2,3,4, or 8
 
-  img_BG = loadImage("BG_ALL_75DPI.png"); //<>// //<>// //<>// //<>//
+  img_BG = loadImage("BG_ALL_75DPI.png"); //<>// //<>//
 
   // add PEVs
   PEVs = new PEVs();
@@ -121,13 +119,13 @@ void setup() {
   //String withRepeats = "OD_160503_1000trips_withRepeat_noIntersections.csv";
   jobSchedule = new ArrayList<Job>();
   //add Pickup Spots
-  Spots = new Spots(); //<>// //<>// //<>// //<>// //<>//
+  Spots = new Spots(); //<>// //<>// //<>//
   paths = new ArrayList<Path>();
   pickups = new Spots();
-  destinations = new Spots(); //<>// //<>// //<>// //<>//
+  destinations = new Spots(); //<>// //<>//
   nodes.addNodesToAllNodes(roads);
   path = new Path(nodes);
-  //Missing PEV Construction //<>// //<>// //<>// //<>//
+  //Missing PEV Construction //<>// //<>//
   PEV miss = new PEV(roads.roads.get(0), 0.0, -1);
   miss.drawn = false;
   PEVs.addPEV(miss);
@@ -146,11 +144,11 @@ void draw() {
 
   if (! drawEverything && ! nothingDrawn) {
     for (PEV pev : PEVs.PEVs) {
-      pev.drawn = false; //<>// //<>// //<>// //<>// //<>// //<>//
+      pev.drawn = false; //<>// //<>// //<>// //<>//
       pev.inRoutePath.drawn = false;
       pev.deliveringPath.drawn = false;
       nothingDrawn = true;
-    } //<>// //<>// //<>// //<>//
+    } //<>// //<>//
   }
 
   if (makeJobs) {
@@ -276,7 +274,7 @@ void draw() {
               temp.drawn = true;
               paths.add(temp);
               currentJob += 1;
-              presenceOfPath = true; //<>// //<>// //<>// //<>//
+              presenceOfPath = true; //<>// //<>//
             }
           }
         }
