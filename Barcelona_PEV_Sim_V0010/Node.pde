@@ -24,6 +24,15 @@ class Node {
     point = point1;
     activity = 0;
   }
+  
+  void drawNode(){
+    pushMatrix();
+    translate(point.x*constantFactor+starting, point.y*constantFactor+starting);
+    ellipse(0, 0, 10, 10);
+    // draw PEV img
+    scale(0.3);
+    popMatrix();
+  }
 
   void drawNode(int act) {
     pushMatrix();
