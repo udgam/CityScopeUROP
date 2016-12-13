@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 10;
+int totalPEVNum = 20;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -26,6 +26,7 @@ Spots Spots;
 boolean drawRoads = true;
 boolean drawPath = true;
 boolean drawTest = false;
+boolean drawAllNodes = false;
 ArrayList <Path> paths;
 Path path;
 Spots pickups;
@@ -135,11 +136,13 @@ void setup() {
   log.logEvent("Simulation initialized with " + totalPEVNum + " available PEVs.");
   log.logEvent("Using LogStatus type of " + logStatus.toString() + ".\n");
   //log.logMatrix(city.matrix, city.matrix[0].length);
+  
+  
 }
 
 void draw() {
   time += simSpeed;
-
+  
   if ((logStatus == LogStatus.PEVPrint || logStatus == LogStatus.DetailedPrint)) { // && time % 10 == 0 Only execute every 10 timesteps
     log.logPEVLocations(PEVs.PEVs, time);
   }
@@ -325,6 +328,8 @@ void draw() {
     pg.line(20, 20, mouseX, mouseY);
 
     imageMode(CORNER);
+    
+    
 
     //image(img_BG, 0, 0, 1920, 1920);
   }
@@ -352,7 +357,7 @@ void draw() {
   Spots.run();
 
   if (drawEverything) {
-    image(pg, 0, 0);
+    //image(pg, 0, 0);
 
     //show frameRate;
     //println(frameRate);
@@ -365,6 +370,12 @@ void draw() {
     // draw scollbars
     //drawScrollbars();
   }
+  
+  if (drawAllNodes){
+      for (Node node: nodes.allNodes){
+        node.drawNode();
+    }
+  }
 
   targetPEVNum = int(ScrollbarRatioPEVNum*45+5); //5 to 50
   PEVs.changeToTargetNum(targetPEVNum);
@@ -372,21 +383,24 @@ void draw() {
   maxSpeedMPS = maxSpeedKPH * 1000.0 / 60.0 / 60.0; //20.0 KPH = 5.55556 MPS
   maxSpeedPPS = maxSpeedMPS / scaleMeterPerPixel;
 
-  if (drawEverything) {
-    fill(255);
-    noStroke();
-    rect(260, 701, 35, 14);
-    rect(260, 726, 35, 14);
-    textAlign(LEFT);
-    textSize(10);
-    fill(200);
-    text("mouseX: "+mouseX/screenScale+", mouseY: "+mouseY/screenScale, 10, 20);
-    fill(0);
-    text(targetPEVNum, 263, 712);
-    text(int(maxSpeedKPH/10), 263, 736);
-    text(int(ScrollbarRatioProb), 263, 760);
-  }
 
+  //Drawing Scrollbar stuff
+  
+  //if (drawEverything) {
+  //  fill(255);
+  //  noStroke();
+  //  rect(260, 701, 35, 14);
+  //  rect(260, 726, 35, 14);
+  //  textAlign(LEFT);
+  //  textSize(10);
+  //  fill(200);
+  //  text("mouseX: "+mouseX/screenScale+", mouseY: "+mouseY/screenScale, 10, 20);
+  //  fill(0);
+  //  text(targetPEVNum, 263, 712);
+  //  text(int(maxSpeedKPH/10), 263, 736);
+  //  text(int(ScrollbarRatioProb), 263, 760);
+  //}
+  
   int maxActivity = 0;
 
   //for(Node node: nodes.allNodes){
