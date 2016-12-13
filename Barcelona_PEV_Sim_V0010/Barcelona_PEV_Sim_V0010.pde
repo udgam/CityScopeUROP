@@ -11,11 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-<<<<<<< HEAD
 int totalPEVNum = 50;
-=======
-int totalPEVNum = 20;
->>>>>>> aaa8f462e288f3fe5c61447ba9d2110f932b23fc
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -71,7 +67,7 @@ Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 60*60*24;
+int totalRunTime = 60*60*24/2;
 
 float simSpeed = 13; // (seconds/frame)
 
