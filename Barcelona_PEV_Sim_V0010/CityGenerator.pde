@@ -11,7 +11,7 @@ class CityFrame {
 class CityGenerator {
   
   int maxBuildingDensity = 25;
-  int citySize = 12;
+  int citySize = 16;
   float roadDensity = 0.4;
   ArrayList<Road> queue = new ArrayList<Road>();
   int[][] matrix = new int[citySize][citySize];
@@ -305,7 +305,9 @@ class CityGenerator {
     
     extendAllRoads(roads);
     
-    if (roads.roads.size() <= roadCount/3)
+    println(roads.roads.size());
+    
+    if (roads.roads.size() <= roadCount/4)
       return run();
       
     printMatrix();
@@ -413,6 +415,7 @@ class CityGenerator {
     Roads roads = new Roads();
     roads.addRoadsByRoadPtFile("roads.txt");
     roads = removeIsolatedRoads(roads, matrix, matrixWidth, matrixHeight);
+    //printMatrix();
     return new CityOutput(roads, buildings, true, matrix);
   }
   
@@ -617,6 +620,7 @@ class CityGenerator {
     for (int row = 0; row < matrixHeight; row++) {
       String[] thisRow = rows[row].split(",");
       for (int col = 0; col < matrixWidth; col++) {
+        //println(row + " " + col);
         returnMatrix[row][col] = Integer.parseInt(thisRow[col].trim());
       }
     }

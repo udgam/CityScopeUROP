@@ -81,11 +81,11 @@ void setup() {
 
   CityGenerator c = new CityGenerator();
 
-  CityOutput city = c.run();
+  //CityOutput city = c.run();
 
-  int[][] matrix = c.fillMatrix("matrix_custom.txt");
+  int[][] matrix = c.fillMatrix("matrix_full.txt");
 
-  //CityOutput city = u.parseInputMatrix(matrix, true);
+  CityOutput city = c.parseInputMatrix(matrix, true);
 
   roads = city.roads; //<>//
   allBuildings = city.buildings;
