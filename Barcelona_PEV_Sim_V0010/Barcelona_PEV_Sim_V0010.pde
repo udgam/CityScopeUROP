@@ -11,7 +11,7 @@ PImage img_BG;
 PGraphics pg;
 String roadPtFile;
 float screenScale;  //1.0F(for normal res or OS UHD)  2.0F(for WIN UHD)
-int totalPEVNum = 50;
+int totalPEVNum = 30;
 int totalSpotNum = 0;
 int targetPEVNum;
 int totalRoadNum;
@@ -60,14 +60,13 @@ boolean drawOnce = true;
 float constantFactor = 100.0;
 float starting = 100;
 
-
-int waitTime = 20*60; // maxWaitTime, minutes * 60
+int waitTime = 30*60; // maxWaitTime, minutes * 60
 
 Boolean makeJobs = true;
 
 LogManager log = new LogManager();
 
-int totalRunTime = 60*60*24/2;
+int totalRunTime = 60*60*24;
 
 float simSpeed = 13; // (seconds/frame)
 
